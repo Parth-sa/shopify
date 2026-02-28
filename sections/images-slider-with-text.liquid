@@ -1,0 +1,79 @@
+<div class="wn-contentslide-image-main">
+  <div class="page-width">
+    <div class="wn-contentslide-image-btn-sec">
+     <div class="wn-contentslide-image-btn">
+       <div class="title_desc_wrapper">
+          <h2>{{section.settings.title}}</h2>
+          <div class="bigimg_text_rte">
+            {{section.settings.subtext}}
+          </div>
+       </div>
+        <div class="wn-img-txt-gridv-txt-btn">
+          <a href="{{ section.settings.url }}">{{section.settings.title1}}</a>
+        </div>
+     </div>
+      <div class="contentslide-img">
+        <div class="contentslide-img-carousel owl-carousel">
+          {% for block in section.blocks %}
+            <div class="item-slider">
+              <img src="{{block.settings.image | img_url:'master'}}" />
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Images slider with text",
+    "settings": [
+      {
+      	"type": "text",  
+      	"id": "title",  
+      	"label": "Title"
+      },
+      {
+        "type": "richtext",
+        "id": "subtext",
+        "label": "Content"
+      },
+      {
+          "type": "text",  
+          "id": "title1",  
+          "label": "Button text"
+      },
+      {
+          "type": "url",  
+          "id": "url",  
+          "label": "Button url"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      }
+    ],
+    "blocks": [
+      {
+        "name": "Image",
+        "type":"Image",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Images slider with text",
+        "category":"Text"
+      }
+    ]
+  }
+{% endschema %}
+

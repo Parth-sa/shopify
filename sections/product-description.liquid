@@ -1,0 +1,60 @@
+<div class="wn-disc-return-ship-content-main">
+  <div class="page-width">
+    <div class="wn-disc-return-ship-content-section small-hide">
+      <div class="wn-disc-return-ship-content-sec">
+        <h2>DESCRIPTION</h2>
+        <div class="prorte">
+          {{ product.description }}
+        </div>
+      </div>
+      <div class="wn-disc-return-ship-content-sec">
+        <h2>SHIPPING & RETURNS</h2>
+        {{ section.settings.shp }}
+      </div>
+    </div>
+
+    <div class="acc-container medium-up-hide">        
+      <div class="acc">
+        <div class="acc-head">
+          <h2>DESCRIPTION</h2>
+        </div>
+        <div class="acc-content">
+          <div class="prorte">
+            {{ product.description }}
+          </div>
+          </div>
+      </div>       
+      <div class="acc">
+        <div class="acc-head">
+          <h2>SHIPPING & RETURNS</h2>
+        </div>
+        <div class="acc-content">
+          <div class="prorte">
+            {{ section.settings.shp }}
+          </div>
+          </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Desc return ship text",
+    "settings": [
+      {
+        "type": "richtext",
+        "id": "shp",
+        "label": "Shipping & Returns",
+        "default": "<p>Justo eget magna fermentum iaculis eu non diam. Sed viverra tellus in hac habitasse platea. Diam volutpat commodo sed egestas egestas. Dolor sit amet consectetur adipiscing elit duis tristique sollicitudin nibh. Amet aliquam id diam maecenas ultricies mi eget mauris. Leo urna molestie at elementum. Id venenatis a condimentum vitae sapien pellentesque. Sed felis eget velit aliquet sagittis id. Id leo in vitae turpis massa sed.</p>"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Desc return ship text",
+        "category":"Text layout"
+      }
+    ]
+  }
+{% endschema %}

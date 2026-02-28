@@ -1,0 +1,192 @@
+<div class="faq-tabber">
+  <div class="page-width">
+    <div class="faq-tabber-wrapper">
+      <div class="faq-tabber-header">
+        <ul class="tabs_faq">
+          {% for block in section.blocks %}
+            <li class="tab-link{% if forloop.index == 1 %} current{% endif %}" data-tab="tab-{{ forloop.index }}">{{ block.settings.type }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="faq-tabber-content">        
+        {% for block in section.blocks %}
+          <div id="tab-{{ forloop.index }}" class="tab-content{% if forloop.index == 1 %} current{% endif %}">
+             <div class="accordion">
+              {% for i in (1..10) %}
+                {% assign id = 'q-' | replace: '-', i %}
+                {% assign ida = 'a-' | replace: '-', i %}
+                {% if block.settings[id] != blank %}
+                  <div class="accordion-item">
+                    <button id="accordion-button-1" aria-expanded="false">
+                      <span class="accordion-title">
+                      {{ block.settings[id] }}
+                      </span>
+                      <span class="icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="accordion-content">
+                      {{ block.settings[ida] }}
+                    </div>
+                  </div>
+                {% endif %}
+              {%- endfor %}
+            </div>
+          </div>          
+        {%- endfor %}
+      </div>      
+    </div>
+  </div>
+</div>
+
+<style>  
+</style>
+
+<script>
+  $(document).ready(function() {	
+    $('ul.tabs_faq li').click(function() {
+      var tab_id = $(this).attr('data-tab');      
+      $('ul.tabs_faq li').removeClass('current');
+      $('.tab-content').removeClass('current');      
+      $(this).addClass('current');
+      $("#"+tab_id).addClass('current');
+    });
+
+    const items = document.querySelectorAll(".accordion button");
+    function toggleAccordion() {
+      const itemToggle = this.getAttribute('aria-expanded');      
+      for (i = 0; i < items.length; i++) {
+        items[i].setAttribute('aria-expanded', 'false');
+      }      
+      if (itemToggle == 'false') {
+        this.setAttribute('aria-expanded', 'true');
+      }
+    }
+    
+    items.forEach(item => item.addEventListener('click', toggleAccordion));
+  })
+</script>
+
+{% schema %}
+  {
+    "name": "FAQ tabber",
+    "settings": [],
+    "blocks": [
+      {
+        "name": "FAQ",
+        "type": "text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "type",
+            "label": "FAQ type"
+          },
+          {
+            "type": "text",
+            "id": "q1",
+            "label": "Question 1"
+          },
+          {
+            "type": "richtext",
+            "id": "a1",
+            "label": "Answer 1"
+          },
+          {
+            "type": "text",
+            "id": "q2",
+            "label": "Question 2"
+          },
+          {
+            "type": "richtext",
+            "id": "a2",
+            "label": "Answer 2"
+          },
+          {
+            "type": "text",
+            "id": "q3",
+            "label": "Question 3"
+          },
+          {
+            "type": "richtext",
+            "id": "a3",
+            "label": "Answer 3"
+          },
+          {
+            "type": "text",
+            "id": "q4",
+            "label": "Question 4"
+          },
+          {
+            "type": "richtext",
+            "id": "a4",
+            "label": "Answer 4"
+          },
+          {
+            "type": "text",
+            "id": "q5",
+            "label": "Question 5"
+          },
+          {
+            "type": "richtext",
+            "id": "a5",
+            "label": "Answer 5"
+          },
+          {
+            "type": "text",
+            "id": "q6",
+            "label": "Question 6"
+          },
+          {
+            "type": "richtext",
+            "id": "a6",
+            "label": "Answer 6"
+          },
+          {
+            "type": "text",
+            "id": "q7",
+            "label": "Question 7"
+          },
+          {
+            "type": "richtext",
+            "id": "a7",
+            "label": "Answer 7"
+          },
+          {
+            "type": "text",
+            "id": "q8",
+            "label": "Question 8"
+          },
+          {
+            "type": "richtext",
+            "id": "a8",
+            "label": "Answer 8"
+          },
+          {
+            "type": "text",
+            "id": "q9",
+            "label": "Question 9"
+          },
+          {
+            "type": "richtext",
+            "id": "a9",
+            "label": "Answer 9"
+          },
+          {
+            "type": "text",
+            "id": "q10",
+            "label": "Question 10"
+          },
+          {
+            "type": "richtext",
+            "id": "a10",
+            "label": "Answer 10"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "FAQ tabber"
+      }
+    ]
+  }
+{% endschema %}

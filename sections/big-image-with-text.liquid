@@ -1,0 +1,59 @@
+<div class="wn-contentslide-image-main">
+  <div class="page-width">
+    <div class="wn-contentslide-image-btn-sec">
+     <div class="wn-contentslide-image-btn">
+       <div class="title_desc_wrapper">
+          <h2>{{section.settings.title}}</h2>
+          <div class="bigimg_text_rte">
+            {{section.settings.subtext}}
+          </div>
+       </div>
+        <div class="wn-img-txt-gridv-txt-btn">
+          <a href="{{ section.settings.url }}">{{section.settings.title1}}</a>
+        </div>
+     </div>
+      <div class="contentslide-img">
+        <img src="{{section.settings.image | img_url:'master'}}" />
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Big image with text",
+    "settings": [
+      {
+      	"type": "text",  
+      	"id": "title",  
+      	"label": "Title"
+      },
+      {
+        "type": "richtext",
+        "id": "subtext",
+        "label": "Content"
+      },
+      {
+          "type": "text",  
+          "id": "title1",  
+          "label": "Button text"
+      },
+      {
+          "type": "url",  
+          "id": "url",  
+          "label": "Button url"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Big image with text",
+        "category":"Text"
+      }
+    ]
+  }
+{% endschema %}

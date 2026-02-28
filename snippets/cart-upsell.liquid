@@ -1,0 +1,40 @@
+{%- unless cart == empty -%}
+{% assign upsell_products = settings.upsell_products %}
+<div class="carousel_upsell-up Drawer__Container">
+  <h2>Complete your look</h2>
+  <div class="carousel_upsell owl-carousel">
+  {% for productUpselll in upsell_products %}
+    {% for vup in productUpselll.variants %}
+      {% assign sc = productUpselll.featured_image %}
+      {% if vup.featured_image != blank %}
+          {% assign sc = vup.featured_image.src %}
+      {% endif %}
+       <div class="caroulse_upsell_in"  dataid="{{ vup.id }}">
+          <div class="upsell_in_img">
+            <a href="{{ productUpselll.url }}">
+              <img src="{{ sc | img_url: '160x' }}" />
+            </a>
+          </div>
+          <div class="upsell_in_content">
+              {% assign vuptitlehandle = vup.title | handle %}
+             <h2><a href="{{ productUpselll.url }}">{{ productUpselll.title }}{% unless vuptitlehandle == 'default-title' %} - {{ vup.title }}{% endunless %}</a></h2>
+             <div class="price_btn_upsell">
+                <p class="price_upsell">
+                {% if vup.compare_at_price > vup.price %}<s>{{ vup.compare_at_price | money_without_trailing_zeros }}</s>{% endif %} {{ vup.price | money_without_trailing_zeros }}
+                </p>
+                <a href="javascript:void(0);" class="btn add-upsell-btn-in" dataid="{{ vup.id }}">
+                   <span>+ ADD</span>
+                   <div class="loading-overlay__spinner hidden">
+                      <svg aria-hidden="true" focusable="false" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+                         <circle class="path" style='stroke: #ffffff;' fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+                      </svg>
+                   </div>
+                </a>
+             </div>
+          </div>
+       </div>
+    {% endfor %}
+    {% endfor %}
+  </div>
+</div>
+{% endunless %}

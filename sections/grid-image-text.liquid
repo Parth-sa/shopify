@@ -1,0 +1,89 @@
+<div class="wn-image-text-gridv-main {% if section.settings.reverse %} reverse-grid-section{% endif %}">
+  <div class="page-width">
+    <div class="wn-image-text-gridv-section">
+      <div class="wn-img-txt-gridv-img">
+        <img src="{{section.settings.image | img_url:'master'}}">
+      </div>
+      <div class="wn-img-txt-gridv-img-text">
+       <div class="wn-img-txt-gridv-imgs">
+         <img src="{{section.settings.image1 | img_url:'master'}}">
+       </div>
+       <div class="wn-img-txt-gridv-txt-btn">
+        <h2>{{section.settings.title}}<br><span>{{section.settings.title1}}</span></h2>
+        <p>{{section.settings.subtext}}</p>
+        <a href="#">{{section.settings.button}}</a>
+       </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@media only screen and (max-width: 767px) {
+  .wn-image-text-gridv-section {
+    flex-direction: column;
+    gap: 0;
+  }
+  .wn-img-txt-gridv-imgs {
+    display: none;
+  }
+  .wn-img-txt-gridv-img-text {
+    width: 100%;
+  }
+  .wn-img-txt-gridv-img {
+    width: 100%;
+  }
+  .wn-img-txt-gridv-txt-btn {
+    padding: 0;
+  }
+}
+</style>
+{% schema %}
+  {
+    "name": "Grid image with text",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "reverse",
+        "label": "Reverse section"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Big Image"
+      },
+      {
+        "type": "image_picker",
+        "id": "image1",
+        "label": "Image"
+      },
+      {
+      	"type": "text",  
+      	"id": "title",  
+      	"label": "Title"
+      },
+      {
+      	"type": "text",  
+      	"id": "title1",  
+      	"label": "Title"
+      },
+      {
+        "type": "richtext",
+        "id": "subtext",
+        "default": "<p> </p>",
+        "label": "text"
+      },
+      {
+        "type": "text",  
+        "id": "button",  
+        "label": "Button"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Grid image with text",
+        "category":"Text layout"
+      }
+    ]
+  }
+{% endschema %}
