@@ -1,1 +1,136 @@
-{"sections":{"image-banner":{"type":"image-banner","blocks":{"heading_ApkYHe":{"type":"heading","settings":{"heading":"<p>Summer Sale<br\/>UP TO 40% OFF<\/p>","heading_size":"h1"}},"buttons_DKkMHU":{"type":"buttons","settings":{"button_label_1":"SHOP NOW","button_link_1":"shopify:\/\/collections","button_style_secondary_1":true,"button_label_2":"","button_link_2":"","button_style_secondary_2":false}}},"block_order":["heading_ApkYHe","buttons_DKkMHU"],"settings":{"image":"shopify:\/\/shop_images\/banner-image.png","image_2":"shopify:\/\/shop_images\/mobile_banner.png","image_overlay_opacity":20,"image_height":"adapt","desktop_content_position":"bottom-center","show_text_box":false,"desktop_content_alignment":"center","color_scheme":"accent-2","image_behavior":"none","mobile_content_alignment":"center","stack_images_on_mobile":false,"show_text_below":false}},"featured_collection_W9tUF3":{"type":"featured-collection","blocks":{"collection_n8JEgE":{"type":"collection","settings":{"collection":"frontpage","title":"Bags"}},"collection_Y6W6gX":{"type":"collection","settings":{"collection":"frontpage","title":"Shoes"}}},"block_order":["collection_n8JEgE","collection_Y6W6gX"],"settings":{"customcarousel":true,"title":"White Noise focuses on <strong>drawing beauty<\/strong> through fashion","ttitle":"MUST HAVE","heading_size":"h2","description":"","show_description":false,"description_style":"body","collection":"","products_to_show":25,"columns_desktop":4,"full_width":false,"show_view_all":true,"view_all_style":"solid","enable_desktop_slider":false,"color_scheme":"","image_ratio":"adapt","image_shape":"default","show_secondary_image":false,"show_vendor":false,"show_rating":false,"enable_quick_add":false,"columns_mobile":"2","swipe_on_mobile":false,"padding_top":68,"padding_bottom":0}},"grid_image_text_gcTf4V":{"type":"grid-image-text","settings":{"reverse":false,"image":"shopify:\/\/shop_images\/grid_big_img.png","image1":"shopify:\/\/shop_images\/grid_small_img.png","title":"FROM","title1":"BOTTOM UP","subtext":"<p> Make your statement with the perfect \u2028blend of sophistication and elegance.<br\/>Explore our SS24 Drop II & redefine \u2028your style journey.<\/p>","button":"SHOP SHOES"}},"big_image_with_text_88m7cz":{"type":"big-image-with-text","settings":{"title":"Check out\u2028SS24 Drop II","subtext":"<p>Make your statement with the perfect blend of sophistication and elegance.<br\/>Explore our SS24 Drop II & redefine your style journey.<\/p>","title1":"Shop now","url":"","image":"shopify:\/\/shop_images\/img.png"}},"grid_image_text_9K8Ufq":{"type":"grid-image-text","settings":{"reverse":true,"image":"shopify:\/\/shop_images\/img_right.png","image1":"shopify:\/\/shop_images\/imgleft.png","title":"CARRY YOUR \u2028WORLD AROUND","title1":"","subtext":"<p>Make your statement with the perfect \u2028blend of sophistication and elegance.<br\/>Explore our SS24 Drop II & redefine \u2028your style journey.<\/p>","button":"SHOP BAGS"}},"images_slider_with_text_VUkh7G":{"type":"images-slider-with-text","blocks":{"image_9i47dK":{"type":"Image","settings":{"image":"shopify:\/\/shop_images\/image_243.png"}},"image_FaEKFj":{"type":"Image","settings":{"image":"shopify:\/\/shop_images\/image_243.png"}},"image_RVqLNW":{"type":"Image","settings":{"image":"shopify:\/\/shop_images\/image_243.png"}}},"block_order":["image_9i47dK","image_FaEKFj","image_RVqLNW"],"settings":{"title":"RUSHING OR DRAGGING","subtext":"<p>Make your statement with the perfect \u2028blend of sophistication and elegance.<br\/>Explore our SS24 Drop II & redefine \u2028your style journey.<\/p>","title1":"SHOP Sneakers","url":""}}},"order":["image-banner","featured_collection_W9tUF3","grid_image_text_gcTf4V","big_image_with_text_88m7cz","grid_image_text_9K8Ufq","images_slider_with_text_VUkh7G"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "luxury-hero": {
+      "type": "luxury-hero",
+      "settings": {
+        "video_url": "",
+        "heading": "Timeless Elegance",
+        "description": "Discover our exquisite collection of engagement rings and fine jewelry, each piece crafted to celebrate life's most precious moments.",
+        "full_height": true,
+        "content_position": "center",
+        "overlay_opacity": 40,
+        "show_scroll_indicator": true
+      }
+    },
+    "featured-collections": {
+      "type": "luxury-collection-grid",
+      "settings": {
+        "products_to_show": 8,
+        "heading": "Signature Collections",
+        "description": "Explore our most coveted designs, from classic solitaires to unique custom creations.",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "background_color": "#faf9f7"
+      }
+    },
+    "brand-story": {
+      "type": "brand-story",
+      "blocks": {
+        "text-intro": {
+          "type": "text_block",
+          "settings": {
+            "heading": "A Legacy of Excellence",
+            "text": "<p>For generations, we have dedicated ourselves to the art of fine jewelry. Each piece in our collection represents a commitment to exceptional craftsmanship, ethically sourced materials, and timeless design.</p><p>Our master artisans bring decades of expertise to every creation, ensuring that your jewelry becomes a treasured heirloom for generations to come.</p>",
+            "button_label": "Discover Our Story",
+            "button_link": ""
+          }
+        },
+        "quote-founder": {
+          "type": "quote_block",
+          "settings": {
+            "quote": "Every diamond tells a story. Our mission is to help you write yours.",
+            "author": "Founder's Name",
+            "author_title": "Founder & Master Jeweler"
+          }
+        }
+      },
+      "block_order": [
+        "text-intro",
+        "quote-founder"
+      ],
+      "settings": {
+        "background_color": "#ffffff",
+        "text_color": "#0a0a0a"
+      }
+    },
+    "cta-banner": {
+      "type": "luxury-cta-banner",
+      "settings": {
+        "overlay_opacity": 60,
+        "heading": "Create Your Dream Ring",
+        "description": "Work with our expert designers to create a one-of-a-kind piece that perfectly captures your vision and love story."
+      }
+    },
+    "testimonials": {
+      "type": "premium-testimonials",
+      "blocks": {
+        "review-1": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5
+          }
+        },
+        "review-2": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5
+          }
+        },
+        "review-3": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5
+          }
+        }
+      },
+      "block_order": [
+        "review-1",
+        "review-2",
+        "review-3"
+      ],
+      "settings": {
+        "heading": "Love Stories",
+        "show_trust_badges": true,
+        "background_color": "#0a0a0a",
+        "text_color": "#ffffff"
+      }
+    },
+    "collection-grid-2": {
+      "type": "luxury-collection-grid",
+      "settings": {
+        "products_to_show": 4,
+        "heading": "New Arrivals",
+        "description": "Be the first to discover our latest designs, fresh from our workshop.",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "background_color": "#ffffff"
+      }
+    },
+    "newsletter-cta": {
+      "type": "luxury-cta-banner",
+      "settings": {
+        "overlay_opacity": 0,
+        "heading": "Join Our Inner Circle",
+        "description": "Be the first to know about exclusive collections, special offers, and jewelry inspiration."
+      }
+    }
+  },
+  "order": [
+    "luxury-hero",
+    "featured-collections",
+    "brand-story",
+    "cta-banner",
+    "testimonials",
+    "collection-grid-2",
+    "newsletter-cta"
+  ]
+}

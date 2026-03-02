@@ -1,0 +1,180 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "image-banner": {
+      "type": "image-banner",
+      "blocks": {
+        "heading_ApkYHe": {
+          "type": "heading",
+          "settings": {
+            "heading": "<p>Summer Sale<br/>UP TO 40% OFF</p>",
+            "heading_size": "h1"
+          }
+        },
+        "buttons_DKkMHU": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "SHOP NOW",
+            "button_link_1": "shopify://collections",
+            "button_style_secondary_1": true,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_ApkYHe",
+        "buttons_DKkMHU"
+      ],
+      "settings": {
+        "image": "shopify://shop_images/banner-image.png",
+        "image_2": "shopify://shop_images/mobile_banner.png",
+        "image_overlay_opacity": 20,
+        "image_height": "adapt",
+        "desktop_content_position": "bottom-center",
+        "show_text_box": false,
+        "desktop_content_alignment": "center",
+        "color_scheme": "accent-2",
+        "image_behavior": "none",
+        "mobile_content_alignment": "center",
+        "stack_images_on_mobile": false,
+        "show_text_below": false
+      }
+    },
+    "featured_collection_W9tUF3": {
+      "type": "featured-collection",
+      "blocks": {
+        "collection_n8JEgE": {
+          "type": "collection",
+          "settings": {
+            "collection": "frontpage",
+            "title": "Bags"
+          }
+        },
+        "collection_Y6W6gX": {
+          "type": "collection",
+          "settings": {
+            "collection": "frontpage",
+            "title": "Shoes"
+          }
+        }
+      },
+      "block_order": [
+        "collection_n8JEgE",
+        "collection_Y6W6gX"
+      ],
+      "settings": {
+        "customcarousel": true,
+        "title": "White Noise focuses on <strong>drawing beauty</strong> through fashion",
+        "ttitle": "MUST HAVE",
+        "heading_size": "h2",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "collection": "",
+        "products_to_show": 25,
+        "columns_desktop": 4,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "enable_desktop_slider": false,
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "enable_quick_add": false,
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 68,
+        "padding_bottom": 0
+      }
+    },
+    "grid_image_text_gcTf4V": {
+      "type": "grid-image-text",
+      "settings": {
+        "reverse": false,
+        "image": "shopify://shop_images/grid_big_img.png",
+        "image1": "shopify://shop_images/grid_small_img.png",
+        "title": "FROM",
+        "title1": "BOTTOM UP",
+        "subtext": "<p> Make your statement with the perfect blend of sophistication and elegance.<br/>Explore our SS24 Drop II & redefine your style journey.</p>",
+        "button": "SHOP SHOES"
+      }
+    },
+    "big_image_with_text_88m7cz": {
+      "type": "big-image-with-text",
+      "settings": {
+        "title": "Check out SS24 Drop II",
+        "subtext": "<p>Make your statement with the perfect blend of sophistication and elegance.<br/>Explore our SS24 Drop II & redefine your style journey.</p>",
+        "title1": "Shop now",
+        "url": "",
+        "image": "shopify://shop_images/img.png"
+      }
+    },
+    "grid_image_text_9K8Ufq": {
+      "type": "grid-image-text",
+      "settings": {
+        "reverse": true,
+        "image": "shopify://shop_images/img_right.png",
+        "image1": "shopify://shop_images/imgleft.png",
+        "title": "CARRY YOUR WORLD AROUND",
+        "title1": "",
+        "subtext": "<p>Make your statement with the perfect blend of sophistication and elegance.<br/>Explore our SS24 Drop II & redefine your style journey.</p>",
+        "button": "SHOP BAGS"
+      }
+    },
+    "images_slider_with_text_VUkh7G": {
+      "type": "images-slider-with-text",
+      "blocks": {
+        "image_9i47dK": {
+          "type": "Image",
+          "settings": {
+            "image": "shopify://shop_images/image_243.png"
+          }
+        },
+        "image_FaEKFj": {
+          "type": "Image",
+          "settings": {
+            "image": "shopify://shop_images/image_243.png"
+          }
+        },
+        "image_RVqLNW": {
+          "type": "Image",
+          "settings": {
+            "image": "shopify://shop_images/image_243.png"
+          }
+        }
+      },
+      "block_order": [
+        "image_9i47dK",
+        "image_FaEKFj",
+        "image_RVqLNW"
+      ],
+      "settings": {
+        "title": "RUSHING OR DRAGGING",
+        "subtext": "<p>Make your statement with the perfect blend of sophistication and elegance.<br/>Explore our SS24 Drop II & redefine your style journey.</p>",
+        "title1": "SHOP Sneakers",
+        "url": ""
+      }
+    }
+  },
+  "order": [
+    "image-banner",
+    "featured_collection_W9tUF3",
+    "grid_image_text_gcTf4V",
+    "big_image_with_text_88m7cz",
+    "grid_image_text_9K8Ufq",
+    "images_slider_with_text_VUkh7G"
+  ]
+}
