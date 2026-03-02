@@ -162,30 +162,45 @@
           <div class="ring-360-spinner"></div>
           <p>Loading 3D model...</p>
         </div>
-        <model-viewer
-          id="ring360Viewer-{{ section.id }}"
-          class="ring-360-model-viewer"
-          src="{{ section.settings.glb_file_url }}"
-          alt="{{ section.settings.heading | default: 'Ring 3D Model' }}"
-          camera-controls
-          auto-rotate
-          auto-rotate-delay="1000"
-          rotation-per-second="30deg"
-          interaction-prompt="auto"
-          shadow-intensity="1"
-          shadow-softness="1"
-          exposure="{{ section.settings.exposure | default: 1 }}"
-          environment-image="neutral"
-          loading="eager"
-          reveal="auto"
-          ar
-          ar-modes="webxr scene-viewer quick-look"
-          touch-action="pan-y"
-        >
-          <div class="ring-360-viewer-controls" slot="interaction-prompt">
-            <span>Drag to rotate • Pinch to zoom</span>
-          </div>
-        </model-viewer>
+        
+        {% if section.settings.viewer_type == 'webgi' %}
+          <!-- WebGI Advanced Viewer (iframe) -->
+          <iframe 
+            id="ring360Viewer-{{ section.id }}"
+            class="ring-360-webgi-iframe"
+            src="{{ section.settings.webgi_viewer_url }}{% if section.settings.glb_file_url != blank %}?model={{ section.settings.glb_file_url | url_encode }}{% endif %}"
+            frameborder="0"
+            allowfullscreen
+            allow="xr-spatial-tracking"
+            style="width: 100%; height: 100%; min-height: 500px; border: none;"
+          ></iframe>
+        {% else %}
+          <!-- Standard Model Viewer -->
+          <model-viewer
+            id="ring360Viewer-{{ section.id }}"
+            class="ring-360-model-viewer"
+            src="{{ section.settings.glb_file_url }}"
+            alt="{{ section.settings.heading | default: 'Ring 3D Model' }}"
+            camera-controls
+            auto-rotate
+            auto-rotate-delay="1000"
+            rotation-per-second="30deg"
+            interaction-prompt="auto"
+            shadow-intensity="1"
+            shadow-softness="1"
+            exposure="{{ section.settings.exposure | default: 1 }}"
+            environment-image="neutral"
+            loading="eager"
+            reveal="auto"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            touch-action="pan-y"
+          >
+            <div class="ring-360-viewer-controls" slot="interaction-prompt">
+              <span>Drag to rotate • Pinch to zoom</span>
+            </div>
+          </model-viewer>
+        {% endif %}
       </div>
     </div>
     <div class="ring-360-modal-footer">
@@ -282,14 +297,17 @@
         modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
 
-        // Stop auto-rotate when closed
-        if (viewer) {
+        // Stop auto-rotate when closed (only for model-viewer)
+        if (viewer && viewer.tagName !== 'IFRAME' && viewer.autoRotate !== undefined) {
           viewer.autoRotate = false;
         }
       }
 
-      // Model viewer events
-      if (viewer) {
+      // Check if using WebGI iframe or model-viewer
+      const isWebGI = viewer && viewer.tagName === 'IFRAME';
+      
+      // Model viewer events (only for standard viewer)
+      if (viewer && !isWebGI) {
         viewer.addEventListener('load', function () {
           console.log('3D model loaded successfully');
           if (loader) {
@@ -302,6 +320,16 @@
           console.error('Model viewer error:', e);
           if (loader) {
             loader.innerHTML = '<p style="color: #c00;">Error loading 3D model</p>';
+          }
+        });
+      }
+      
+      // WebGI iframe events
+      if (viewer && isWebGI) {
+        viewer.addEventListener('load', function() {
+          console.log('WebGI viewer loaded');
+          if (loader) {
+            loader.style.display = 'none';
           }
         });
       }
@@ -356,6 +384,29 @@
     {
       "type": "header",
       "content": "3D Model Settings"
+    },
+    {
+      "type": "select",
+      "id": "viewer_type",
+      "label": "Viewer Type",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard (Model Viewer)"
+        },
+        {
+          "value": "webgi",
+          "label": "Advanced (WebGI - Better Reflections)"
+        }
+      ],
+      "default": "standard",
+      "info": "WebGI provides better diamond and metal reflections but requires hosting the viewer separately"
+    },
+    {
+      "type": "text",
+      "id": "webgi_viewer_url",
+      "label": "WebGI Viewer URL",
+      "info": "URL to your hosted WebGI viewer (e.g., https://your-domain.com/ring-viewer/). Only used when Advanced viewer is selected."
     },
     {
       "type": "url",
