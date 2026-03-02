@@ -1,0 +1,459 @@
+/* ============================================
+   Ring 360° Viewer Styles
+   ============================================ */
+
+.ring-360-section {
+  padding: var(--section-padding-top, 60px) 0 var(--section-padding-bottom, 60px);
+}
+
+.ring-360-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Header Styles */
+.ring-360-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.ring-360-subheading {
+  display: block;
+  font-size: 0.875rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #86754d;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.ring-360-title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: #0a0a0a;
+  margin: 0 0 16px;
+  font-family: var(--font-heading-family, serif);
+}
+
+.ring-360-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Preview Container */
+.ring-360-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.ring-360-preview {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  aspect-ratio: 1 / 1;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring-360-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.ring-360-preview:hover .ring-360-preview-image {
+  transform: scale(1.02);
+}
+
+.ring-360-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: #999;
+  padding: 40px;
+}
+
+.ring-360-placeholder svg {
+  opacity: 0.5;
+}
+
+.ring-360-placeholder span {
+  font-size: 1.125rem;
+  letter-spacing: 0.05em;
+}
+
+/* 360 Button */
+.ring-360-button {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #86754d 0%, #a89869 100%);
+  color: #fff;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 50px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(134, 117, 77, 0.35);
+  z-index: 5;
+}
+
+.ring-360-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(134, 117, 77, 0.45);
+  background: linear-gradient(135deg, #9a8a5e 0%, #b8a879 100%);
+}
+
+.ring-360-button:active {
+  transform: translateY(0);
+}
+
+.ring-360-button-icon {
+  display: flex;
+  animation: rotate360Icon 3s linear infinite;
+}
+
+@keyframes rotate360Icon {
+  0%, 100% { transform: rotateY(0deg); }
+  50% { transform: rotateY(180deg); }
+}
+
+.ring-360-button-text {
+  white-space: nowrap;
+}
+
+/* Feature Icons */
+.ring-360-features {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 24px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.ring-360-feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.ring-360-feature svg {
+  color: #86754d;
+  flex-shrink: 0;
+}
+
+/* Modal Styles */
+.ring-360-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.ring-360-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.ring-360-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+}
+
+.ring-360-modal-container {
+  position: relative;
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+
+.ring-360-modal.is-open .ring-360-modal-container {
+  transform: scale(1);
+}
+
+.ring-360-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #eee;
+}
+
+.ring-360-modal-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #0a0a0a;
+  margin: 0;
+}
+
+.ring-360-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #333;
+}
+
+.ring-360-modal-close:hover {
+  background: #eee;
+  color: #000;
+}
+
+.ring-360-modal-content {
+  flex: 1;
+  overflow: hidden;
+  min-height: 400px;
+}
+
+.ring-360-viewer-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  background: linear-gradient(180deg, #f8f8f8 0%, #e8e8e8 100%);
+}
+
+/* Model Viewer */
+.ring-360-model-viewer {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  --poster-color: transparent;
+}
+
+.ring-360-model-viewer::part(default-progress-bar) {
+  background-color: #86754d;
+  height: 4px;
+}
+
+.ring-360-model-viewer::part(default-ar-button) {
+  display: none;
+}
+
+/* Loader */
+.ring-360-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 10;
+}
+
+.ring-360-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid #ddd;
+  border-top-color: #86754d;
+  border-radius: 50%;
+  animation: spin360 0.8s linear infinite;
+}
+
+@keyframes spin360 {
+  to { transform: rotate(360deg); }
+}
+
+.ring-360-loader p {
+  font-size: 0.9375rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Viewer Controls Slot */
+.ring-360-viewer-controls {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 0.8125rem;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Modal Footer */
+.ring-360-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: #fafafa;
+  border-top: 1px solid #eee;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ring-360-instructions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8125rem;
+  color: #666;
+}
+
+.ring-360-instructions strong {
+  color: #333;
+}
+
+/* AR Button */
+.ring-360-ar-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #86754d 0%, #a89869 100%);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ring-360-ar-button:hover {
+  background: linear-gradient(135deg, #9a8a5e 0%, #b8a879 100%);
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+  .ring-360-section {
+    padding: 40px 0;
+  }
+
+  .ring-360-header {
+    margin-bottom: 24px;
+  }
+
+  .ring-360-title {
+    font-size: 1.5rem;
+  }
+
+  .ring-360-preview {
+    border-radius: 12px;
+  }
+
+  .ring-360-button {
+    bottom: 16px;
+    right: 16px;
+    padding: 12px 18px;
+    font-size: 0.875rem;
+  }
+
+  .ring-360-features {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .ring-360-feature {
+    justify-content: center;
+  }
+
+  .ring-360-modal-container {
+    width: 95%;
+    max-height: 95vh;
+    border-radius: 16px;
+  }
+
+  .ring-360-modal-header {
+    padding: 16px 20px;
+  }
+
+  .ring-360-modal-title {
+    font-size: 1.125rem;
+  }
+
+  .ring-360-viewer-wrapper,
+  .ring-360-model-viewer {
+    min-height: 350px;
+  }
+
+  .ring-360-modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .ring-360-instructions {
+    align-items: center;
+  }
+
+  .ring-360-ar-button {
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .ring-360-button-text {
+    display: none;
+  }
+
+  .ring-360-button {
+    padding: 14px;
+    border-radius: 50%;
+  }
+
+  .ring-360-button-icon {
+    animation: none;
+  }
+
+  .ring-360-viewer-wrapper,
+  .ring-360-model-viewer {
+    min-height: 300px;
+  }
+}
