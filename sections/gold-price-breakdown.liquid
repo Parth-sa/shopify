@@ -1,0 +1,350 @@
+{% comment %}
+  GOLD PRODUCT PRICE BREAKDOWN
+  ============================
+  Displays detailed price breakdown for gold jewelry products
+  Uses metafields: gold_weight, gold_purity, stone_cost, making_charges
+{% endcomment %}
+
+{{ 'gold-pricing.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #GoldBreakdown-{{ section.id }} {
+    --breakdown-bg: {{ section.settings.background_color }};
+    --breakdown-border: {{ section.settings.border_color }};
+    --breakdown-accent: {{ section.settings.accent_color }};
+  }
+{% endstyle %}
+
+{% comment %} Get product metafields {% endcomment %}
+{% assign gold_weight = product.metafields.jewelry.gold_weight.value | default: product.metafields.custom.gold_weight | default: 0 %}
+{% assign gold_purity = product.metafields.jewelry.gold_purity.value | default: product.metafields.custom.gold_purity | default: '22k' %}
+{% assign stone_weight = product.metafields.jewelry.stone_weight.value | default: product.metafields.custom.stone_weight | default: 0 %}
+{% assign stone_cost = product.metafields.jewelry.stone_cost.value | default: product.metafields.custom.stone_cost | default: 0 %}
+{% assign making_charge_type = product.metafields.jewelry.making_charge_type.value | default: 'percentage' %}
+{% assign making_charges = product.metafields.jewelry.making_charges.value | default: product.metafields.custom.making_charges | default: section.settings.default_making_charge %}
+{% assign gst_rate = section.settings.gst_rate | default: 3 %}
+
+<div 
+  id="GoldBreakdown-{{ section.id }}"
+  class="gold-price-breakdown"
+  data-section-id="{{ section.id }}"
+  data-gold-weight="{{ gold_weight }}"
+  data-gold-purity="{{ gold_purity }}"
+  data-stone-cost="{{ stone_cost }}"
+  data-making-charges="{{ making_charges }}"
+  data-making-type="{{ making_charge_type }}"
+  data-gst-rate="{{ gst_rate }}"
+  data-currency-symbol="{{ section.settings.currency_symbol }}"
+>
+  <!-- Header -->
+  <div class="gold-price-breakdown__header">
+    <h3 class="gold-price-breakdown__title">Price Breakdown</h3>
+    <span class="gold-price-breakdown__badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      Certified
+    </span>
+  </div>
+
+  <!-- Gold Specifications -->
+  <div class="gold-specs">
+    <div class="gold-specs__item">
+      <span class="gold-specs__label">Gold Weight</span>
+      <span class="gold-specs__value">
+        {{ gold_weight }}
+        <span class="gold-specs__unit">gm</span>
+      </span>
+    </div>
+    <div class="gold-specs__item">
+      <span class="gold-specs__label">Gold Purity</span>
+      <span class="gold-specs__value">{{ gold_purity | upcase }}</span>
+    </div>
+    {% if stone_weight > 0 %}
+    <div class="gold-specs__item">
+      <span class="gold-specs__label">Stone Weight</span>
+      <span class="gold-specs__value">
+        {{ stone_weight }}
+        <span class="gold-specs__unit">ct</span>
+      </span>
+    </div>
+    {% else %}
+    <div class="gold-specs__item">
+      <span class="gold-specs__label">Making</span>
+      <span class="gold-specs__value">
+        {{ making_charges }}{% if making_charge_type == 'percentage' %}%{% endif %}
+      </span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Price Table -->
+  <div class="gold-price-breakdown__table">
+    <!-- Gold Value -->
+    <div class="gold-price-breakdown__row">
+      <div class="gold-price-breakdown__label">
+        <span class="gold-price-breakdown__label-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polygon points="12,2 22,8 22,16 12,22 2,16 2,8"/>
+          </svg>
+        </span>
+        <span>
+          Gold Value
+          <span class="gold-price-breakdown__sublabel">{{ gold_weight }}gm × {{ gold_purity | upcase }} rate</span>
+        </span>
+      </div>
+      <span class="gold-price-breakdown__value" data-calc="gold-value">
+        {{ section.settings.currency_symbol }}--
+      </span>
+    </div>
+
+    {% if stone_cost > 0 or stone_weight > 0 %}
+    <!-- Stone Value -->
+    <div class="gold-price-breakdown__row">
+      <div class="gold-price-breakdown__label">
+        <span class="gold-price-breakdown__label-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polygon points="12,2 20,7 20,17 12,22 4,17 4,7"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </span>
+        <span>
+          Stone Value
+          {% if stone_weight > 0 %}
+          <span class="gold-price-breakdown__sublabel">{{ stone_weight }} carat</span>
+          {% endif %}
+        </span>
+      </div>
+      <span class="gold-price-breakdown__value" data-calc="stone-value">
+        {{ section.settings.currency_symbol }}{{ stone_cost | money_without_currency }}
+      </span>
+    </div>
+    {% endif %}
+
+    <!-- Making Charges -->
+    <div class="gold-price-breakdown__row">
+      <div class="gold-price-breakdown__label">
+        <span class="gold-price-breakdown__label-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+          </svg>
+        </span>
+        <span>
+          Making Charges
+          <span class="gold-price-breakdown__sublabel">
+            {% if making_charge_type == 'percentage' %}
+              {{ making_charges }}% of gold value
+            {% else %}
+              ₹{{ making_charges }}/gm
+            {% endif %}
+          </span>
+        </span>
+      </div>
+      <span class="gold-price-breakdown__value" data-calc="making-charges">
+        {{ section.settings.currency_symbol }}--
+      </span>
+    </div>
+
+    <!-- Subtotal -->
+    <div class="gold-price-breakdown__row">
+      <div class="gold-price-breakdown__label">
+        <span class="gold-price-breakdown__label-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </span>
+        <span>Subtotal</span>
+      </div>
+      <span class="gold-price-breakdown__value" data-calc="subtotal">
+        {{ section.settings.currency_symbol }}--
+      </span>
+    </div>
+
+    <!-- GST -->
+    {% if section.settings.show_gst %}
+    <div class="gold-price-breakdown__row">
+      <div class="gold-price-breakdown__label">
+        <span class="gold-price-breakdown__label-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="3" width="20" height="18" rx="2"/>
+            <path d="M8 7v10M16 7v10M2 12h20"/>
+          </svg>
+        </span>
+        <span>
+          GST
+          <span class="gold-price-breakdown__sublabel">{{ gst_rate }}%</span>
+        </span>
+      </div>
+      <span class="gold-price-breakdown__value" data-calc="gst">
+        {{ section.settings.currency_symbol }}--
+      </span>
+    </div>
+    {% endif %}
+
+    <!-- Total -->
+    <div class="gold-price-breakdown__row gold-price-breakdown__row--total">
+      <div class="gold-price-breakdown__label">Total Price</div>
+      <span class="gold-price-breakdown__value" data-calc="total">
+        {{ section.settings.currency_symbol }}--
+      </span>
+    </div>
+  </div>
+
+  <!-- Footer Note -->
+  <div class="gold-price-breakdown__footer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 16v-4M12 8h.01"/>
+    </svg>
+    <span>{{ section.settings.footer_note }}</span>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const breakdown = document.getElementById('GoldBreakdown-{{ section.id }}');
+    if (!breakdown) return;
+
+    const config = {
+      goldWeight: parseFloat(breakdown.dataset.goldWeight) || 0,
+      goldPurity: breakdown.dataset.goldPurity || '22k',
+      stoneCost: parseFloat(breakdown.dataset.stoneCost) || 0,
+      makingCharges: parseFloat(breakdown.dataset.makingCharges) || 0,
+      makingType: breakdown.dataset.makingType || 'percentage',
+      gstRate: parseFloat(breakdown.dataset.gstRate) || 3,
+      currencySymbol: breakdown.dataset.currencySymbol || '₹'
+    };
+
+    function calculatePrice(goldRates) {
+      if (!goldRates || !config.goldWeight) return;
+
+      // Get rate for the purity
+      const purityKey = config.goldPurity.toLowerCase().replace('k', 'k');
+      const goldRate = goldRates.rates[purityKey] || goldRates.rate24K * 0.916; // default to 22k
+
+      // Calculate components
+      const goldValue = config.goldWeight * goldRate;
+      
+      let makingAmount = 0;
+      if (config.makingType === 'percentage') {
+        makingAmount = goldValue * (config.makingCharges / 100);
+      } else {
+        makingAmount = config.goldWeight * config.makingCharges;
+      }
+
+      const subtotal = goldValue + config.stoneCost + makingAmount;
+      const gstAmount = subtotal * (config.gstRate / 100);
+      const total = subtotal + gstAmount;
+
+      // Update display
+      updateElement('gold-value', formatCurrency(goldValue));
+      updateElement('making-charges', formatCurrency(makingAmount));
+      updateElement('subtotal', formatCurrency(subtotal));
+      updateElement('gst', formatCurrency(gstAmount));
+      updateElement('total', formatCurrency(total));
+    }
+
+    function updateElement(calcType, value) {
+      const el = breakdown.querySelector(`[data-calc="${calcType}"]`);
+      if (el) {
+        el.textContent = config.currencySymbol + value;
+      }
+    }
+
+    function formatCurrency(value) {
+      return new Intl.NumberFormat('en-IN', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(Math.round(value));
+    }
+
+    // Listen for gold rate updates
+    document.addEventListener('goldRatesUpdated', (e) => {
+      calculatePrice(e.detail);
+    });
+
+    // Check if rates already available
+    if (window.GoldRates) {
+      calculatePrice(window.GoldRates);
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Gold Price Breakdown",
+  "tag": "section",
+  "class": "gold-breakdown-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Settings"
+    },
+    {
+      "type": "text",
+      "id": "currency_symbol",
+      "label": "Currency symbol",
+      "default": "₹"
+    },
+    {
+      "type": "range",
+      "id": "default_making_charge",
+      "label": "Default making charge (%)",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "default": 14,
+      "info": "Used when product doesn't have making charge metafield"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_gst",
+      "label": "Show GST",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "gst_rate",
+      "label": "GST rate (%)",
+      "min": 0,
+      "max": 18,
+      "step": 0.5,
+      "default": 3
+    },
+    {
+      "type": "textarea",
+      "id": "footer_note",
+      "label": "Footer note",
+      "default": "Prices are based on current gold rates and may vary. Final price will be calculated at checkout."
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#faf9f7"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#c9a962"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gold Price Breakdown"
+    }
+  ]
+}
+{% endschema %}

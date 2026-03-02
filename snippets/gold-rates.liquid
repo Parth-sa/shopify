@@ -1,0 +1,412 @@
+{% comment %}
+  GOLD RATES SNIPPET
+  ==================
+  Reusable snippet for displaying current gold rates
+  Usage: {% render 'gold-rates', style: 'compact' %}
+  
+  Parameters:
+  - style: 'compact' | 'full' | 'minimal'
+  - show_purity: '22k' | '24k' | 'all' (default: 'all')
+  - currency_symbol: '₹' | '$' (default: '₹')
+{% endcomment %}
+
+{% assign rate_style = style | default: 'compact' %}
+{% assign show_purity = show_purity | default: 'all' %}
+{% assign currency = currency_symbol | default: '₹' %}
+
+{% case rate_style %}
+  {% when 'minimal' %}
+    <div class="gold-rates gold-rates--minimal" data-gold-rates>
+      {% if show_purity == 'all' or show_purity == '22k' %}
+        <span class="gold-rates__item">
+          <span class="gold-rates__label">22K:</span>
+          <span class="gold-rates__value" data-rate="22k">{{ currency }}--</span>/gm
+        </span>
+      {% endif %}
+      {% if show_purity == 'all' or show_purity == '24k' %}
+        <span class="gold-rates__item">
+          <span class="gold-rates__label">24K:</span>
+          <span class="gold-rates__value" data-rate="24k">{{ currency }}--</span>/gm
+        </span>
+      {% endif %}
+    </div>
+
+  {% when 'compact' %}
+    <div class="gold-rates gold-rates--compact" data-gold-rates>
+      <div class="gold-rates__header">
+        <span class="gold-rates__title">Today's Gold Rate</span>
+        <span class="gold-rates__live">
+          <span class="gold-rates__live-dot"></span>
+          <span>Live</span>
+        </span>
+      </div>
+      <div class="gold-rates__grid">
+        {% if show_purity == 'all' %}
+          <div class="gold-rates__card" data-purity="24k">
+            <span class="gold-rates__karat">24K</span>
+            <span class="gold-rates__price" data-rate="24k">{{ currency }}--</span>
+            <span class="gold-rates__unit">/gram</span>
+          </div>
+          <div class="gold-rates__card gold-rates__card--primary" data-purity="22k">
+            <span class="gold-rates__karat">22K</span>
+            <span class="gold-rates__price" data-rate="22k">{{ currency }}--</span>
+            <span class="gold-rates__unit">/gram</span>
+          </div>
+          <div class="gold-rates__card" data-purity="18k">
+            <span class="gold-rates__karat">18K</span>
+            <span class="gold-rates__price" data-rate="18k">{{ currency }}--</span>
+            <span class="gold-rates__unit">/gram</span>
+          </div>
+        {% elsif show_purity == '22k' %}
+          <div class="gold-rates__card gold-rates__card--primary" data-purity="22k">
+            <span class="gold-rates__karat">22K Gold</span>
+            <span class="gold-rates__price" data-rate="22k">{{ currency }}--</span>
+            <span class="gold-rates__unit">/gram</span>
+          </div>
+        {% elsif show_purity == '24k' %}
+          <div class="gold-rates__card gold-rates__card--primary" data-purity="24k">
+            <span class="gold-rates__karat">24K Gold</span>
+            <span class="gold-rates__price" data-rate="24k">{{ currency }}--</span>
+            <span class="gold-rates__unit">/gram</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  {% when 'full' %}
+    <div class="gold-rates gold-rates--full" data-gold-rates>
+      <div class="gold-rates__header">
+        <div class="gold-rates__title-row">
+          <h3 class="gold-rates__title">Live Gold Rates</h3>
+          <span class="gold-rates__live">
+            <span class="gold-rates__live-dot"></span>
+            <span class="gold-rates__live-text">Live</span>
+          </span>
+        </div>
+        <p class="gold-rates__updated">
+          Last updated: <span data-rate-time>--</span>
+        </p>
+      </div>
+      <div class="gold-rates__table">
+        <div class="gold-rates__row gold-rates__row--header">
+          <span>Purity</span>
+          <span>Rate/gram</span>
+          <span>Rate/10gm</span>
+        </div>
+        <div class="gold-rates__row" data-purity="24k">
+          <span class="gold-rates__purity">24K (999)</span>
+          <span class="gold-rates__price" data-rate="24k">{{ currency }}--</span>
+          <span class="gold-rates__price-10g" data-rate="24k-10">{{ currency }}--</span>
+        </div>
+        <div class="gold-rates__row gold-rates__row--highlight" data-purity="22k">
+          <span class="gold-rates__purity">
+            22K (916)
+            <span class="gold-rates__popular">Popular</span>
+          </span>
+          <span class="gold-rates__price" data-rate="22k">{{ currency }}--</span>
+          <span class="gold-rates__price-10g" data-rate="22k-10">{{ currency }}--</span>
+        </div>
+        <div class="gold-rates__row" data-purity="18k">
+          <span class="gold-rates__purity">18K (750)</span>
+          <span class="gold-rates__price" data-rate="18k">{{ currency }}--</span>
+          <span class="gold-rates__price-10g" data-rate="18k-10">{{ currency }}--</span>
+        </div>
+        <div class="gold-rates__row" data-purity="14k">
+          <span class="gold-rates__purity">14K (583)</span>
+          <span class="gold-rates__price" data-rate="14k">{{ currency }}--</span>
+          <span class="gold-rates__price-10g" data-rate="14k-10">{{ currency }}--</span>
+        </div>
+      </div>
+      <div class="gold-rates__footer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4M12 8h.01"/>
+        </svg>
+        <span>Rates are indicative and may vary. Final price calculated at checkout.</span>
+      </div>
+    </div>
+{% endcase %}
+
+<style>
+  /* Minimal Style */
+  .gold-rates--minimal {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    font-size: 0.875rem;
+  }
+  
+  .gold-rates--minimal .gold-rates__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .gold-rates--minimal .gold-rates__label {
+    font-weight: 600;
+    color: #c9a962;
+  }
+  
+  .gold-rates--minimal .gold-rates__value {
+    font-weight: 600;
+  }
+
+  /* Compact Style */
+  .gold-rates--compact {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .gold-rates--compact .gold-rates__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .gold-rates--compact .gold-rates__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .gold-rates__live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #22c55e;
+    font-weight: 600;
+  }
+  
+  .gold-rates__live-dot {
+    width: 6px;
+    height: 6px;
+    background: #22c55e;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  
+  .gold-rates__grid {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .gold-rates__card {
+    flex: 1;
+    padding: 12px;
+    background: #f8f6f3;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+  }
+  
+  .gold-rates__card--primary {
+    background: linear-gradient(135deg, rgba(201, 169, 98, 0.15), rgba(201, 169, 98, 0.05));
+    border-color: rgba(201, 169, 98, 0.3);
+  }
+  
+  .gold-rates__karat {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #c9a962;
+    margin-bottom: 6px;
+  }
+  
+  .gold-rates__price {
+    display: block;
+    font-family: var(--font-heading, 'Playfair Display', serif);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+  
+  .gold-rates__unit {
+    font-size: 0.75rem;
+    color: #888;
+  }
+  
+  /* Full Style */
+  .gold-rates--full {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    padding: 24px;
+    border-radius: 8px;
+  }
+  
+  .gold-rates--full .gold-rates__header {
+    margin-bottom: 20px;
+  }
+  
+  .gold-rates__title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .gold-rates--full .gold-rates__title {
+    font-family: var(--font-heading, 'Playfair Display', serif);
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin: 0;
+  }
+  
+  .gold-rates__updated {
+    font-size: 0.75rem;
+    color: #888;
+    margin: 0;
+  }
+  
+  .gold-rates__table {
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  
+  .gold-rates__row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  
+  .gold-rates__row:last-child {
+    border-bottom: none;
+  }
+  
+  .gold-rates__row--header {
+    background: #f8f6f3;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #666;
+  }
+  
+  .gold-rates__row--highlight {
+    background: linear-gradient(90deg, rgba(201, 169, 98, 0.08), transparent);
+  }
+  
+  .gold-rates__purity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+  }
+  
+  .gold-rates__popular {
+    font-size: 0.625rem;
+    padding: 2px 8px;
+    background: #c9a962;
+    color: #fff;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .gold-rates--full .gold-rates__price,
+  .gold-rates__price-10g {
+    font-family: var(--font-heading, 'Playfair Display', serif);
+    font-weight: 600;
+  }
+  
+  .gold-rates__footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    font-size: 0.75rem;
+    color: #888;
+  }
+  
+  .gold-rates__footer svg {
+    color: #c9a962;
+    flex-shrink: 0;
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .gold-rates__grid {
+      flex-direction: column;
+    }
+    
+    .gold-rates__row {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    
+    .gold-rates__row--header span:last-child,
+    .gold-rates__price-10g {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    const rateContainers = document.querySelectorAll('[data-gold-rates]');
+    if (!rateContainers.length) return;
+    
+    const currencySymbol = '{{ currency }}';
+    
+    function formatPrice(value) {
+      return currencySymbol + new Intl.NumberFormat('en-IN', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(Math.round(value));
+    }
+    
+    function formatTime(date) {
+      return date.toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    
+    function updateRates(rates) {
+      rateContainers.forEach(container => {
+        // Update individual rates
+        ['24k', '22k', '18k', '14k'].forEach(purity => {
+          const rateEl = container.querySelector(`[data-rate="${purity}"]`);
+          if (rateEl && rates.rates && rates.rates[purity]) {
+            rateEl.textContent = formatPrice(rates.rates[purity]);
+          }
+          
+          // Update 10g rates
+          const rate10gEl = container.querySelector(`[data-rate="${purity}-10"]`);
+          if (rate10gEl && rates.rates && rates.rates[purity]) {
+            rate10gEl.textContent = formatPrice(rates.rates[purity] * 10);
+          }
+        });
+        
+        // Update time
+        const timeEl = container.querySelector('[data-rate-time]');
+        if (timeEl && rates.timestamp) {
+          timeEl.textContent = formatTime(new Date(rates.timestamp));
+        }
+      });
+    }
+    
+    // Listen for gold rate updates
+    document.addEventListener('goldRatesUpdated', (e) => {
+      updateRates(e.detail);
+    });
+    
+    // Check if rates already available
+    if (window.GoldRates) {
+      updateRates(window.GoldRates);
+    }
+  })();
+</script>
