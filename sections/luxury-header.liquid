@@ -1,0 +1,788 @@
+{% comment %}
+  LUXURY HEADER - Keyzar/Cartier Style
+  =====================================
+  Premium transparent header with elegant navigation
+  Sticky on scroll with smooth transitions
+{% endcomment %}
+
+{{ 'luxury-header.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  .luxury-header {
+    --header-bg: {% if section.settings.transparent_header %}transparent{% else %}{{ section.settings.background_color }}{% endif %};
+    --header-text: {% if section.settings.transparent_header %}{{ section.settings.transparent_text_color }}{% else %}{{ section.settings.text_color }}{% endif %};
+    --header-accent: {{ section.settings.accent_color }};
+  }
+{% endstyle %}
+
+<header 
+  class="luxury-header{% if section.settings.transparent_header %} luxury-header--transparent{% endif %}{% if section.settings.enable_sticky %} luxury-header--sticky{% endif %}"
+  data-section-id="{{ section.id }}"
+  data-transparent="{{ section.settings.transparent_header }}"
+>
+  {%- if section.settings.show_announcement and section.settings.announcement_text != blank -%}
+    <div class="luxury-announcement">
+      <div class="luxury-container">
+        <p class="luxury-announcement__text">
+          {% if section.settings.announcement_icon != 'none' %}
+            <span class="luxury-announcement__icon">
+              {% case section.settings.announcement_icon %}
+                {% when 'diamond' %}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M12 2L2 9l10 13 10-13-10-7z"/>
+                    <path d="M2 9h20"/>
+                    <path d="M12 2v20"/>
+                  </svg>
+                {% when 'gift' %}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="8" width="18" height="4"/>
+                    <rect x="5" y="12" width="14" height="9"/>
+                    <path d="M12 8v13"/>
+                    <path d="M7 8c0-2.5 2-4 5-4s5 1.5 5 4"/>
+                  </svg>
+                {% when 'shipping' %}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M1 3h15v13H1z"/>
+                    <path d="M16 8h4l3 4v5h-7V8z"/>
+                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                    <circle cx="18.5" cy="18.5" r="2.5"/>
+                  </svg>
+              {% endcase %}
+            </span>
+          {% endif %}
+          {{ section.settings.announcement_text }}
+          {% if section.settings.announcement_link != blank %}
+            <a href="{{ section.settings.announcement_link }}" class="luxury-announcement__link">
+              {{ section.settings.announcement_link_text | default: 'Learn More' }}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          {% endif %}
+        </p>
+      </div>
+    </div>
+  {%- endif -%}
+
+  <div class="luxury-header__wrapper">
+    <div class="luxury-container luxury-header__container">
+      <!-- Mobile Menu Toggle -->
+      <button class="luxury-header__mobile-toggle" aria-label="Open menu" data-drawer-toggle>
+        <span class="luxury-header__hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+
+      <!-- Logo -->
+      <div class="luxury-header__logo">
+        <a href="{{ routes.root_url }}" class="luxury-header__logo-link">
+          {%- if section.settings.logo != blank -%}
+            <img 
+              src="{{ section.settings.logo | image_url: width: 400 }}"
+              alt="{{ shop.name }}"
+              width="{{ section.settings.logo_width }}"
+              height="auto"
+              class="luxury-header__logo-img"
+              loading="eager"
+            >
+            {%- if section.settings.logo_light != blank -%}
+              <img 
+                src="{{ section.settings.logo_light | image_url: width: 400 }}"
+                alt="{{ shop.name }}"
+                width="{{ section.settings.logo_width }}"
+                height="auto"
+                class="luxury-header__logo-img luxury-header__logo-img--light"
+                loading="eager"
+              >
+            {%- endif -%}
+          {%- else -%}
+            <span class="luxury-header__logo-text">{{ shop.name }}</span>
+          {%- endif -%}
+        </a>
+      </div>
+
+      <!-- Main Navigation -->
+      <nav class="luxury-header__nav" role="navigation" aria-label="Main">
+        <ul class="luxury-header__menu">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'menu_item' -%}
+                <li class="luxury-header__menu-item{% if block.settings.is_mega %} has-mega-menu{% endif %}" {{ block.shopify_attributes }}>
+                  <a 
+                    href="{{ block.settings.link }}" 
+                    class="luxury-header__menu-link"
+                    {% if block.settings.is_mega %}aria-haspopup="true" aria-expanded="false"{% endif %}
+                  >
+                    {{ block.settings.title }}
+                    {%- if block.settings.is_mega -%}
+                      <svg class="luxury-header__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                      </svg>
+                    {%- endif -%}
+                  </a>
+                  
+                  {%- if block.settings.is_mega -%}
+                    <div class="luxury-mega-menu" data-mega-menu>
+                      <div class="luxury-mega-menu__inner">
+                        <div class="luxury-container">
+                          <div class="luxury-mega-menu__grid">
+                            <!-- Featured Image -->
+                            {%- if block.settings.mega_image != blank -%}
+                              <div class="luxury-mega-menu__featured">
+                                <a href="{{ block.settings.mega_image_link | default: block.settings.link }}" class="luxury-mega-menu__featured-link">
+                                  <div class="luxury-mega-menu__featured-image">
+                                    <img 
+                                      src="{{ block.settings.mega_image | image_url: width: 600 }}"
+                                      alt="{{ block.settings.mega_image_text | default: block.settings.title }}"
+                                      loading="lazy"
+                                    >
+                                  </div>
+                                  <div class="luxury-mega-menu__featured-content">
+                                    <span class="luxury-mega-menu__featured-title">{{ block.settings.mega_image_text | default: block.settings.title }}</span>
+                                    <span class="luxury-mega-menu__featured-cta">Shop Now</span>
+                                  </div>
+                                </a>
+                              </div>
+                            {%- endif -%}
+
+                            <!-- Menu Columns -->
+                            <div class="luxury-mega-menu__columns">
+                              {%- if block.settings.mega_menu != blank -%}
+                                {%- assign mega_links = linklists[block.settings.mega_menu].links -%}
+                                {%- for link in mega_links -%}
+                                  <div class="luxury-mega-menu__column">
+                                    <a href="{{ link.url }}" class="luxury-mega-menu__column-title">{{ link.title }}</a>
+                                    {%- if link.links.size > 0 -%}
+                                      <ul class="luxury-mega-menu__links">
+                                        {%- for child_link in link.links -%}
+                                          <li>
+                                            <a href="{{ child_link.url }}" class="luxury-mega-menu__link">{{ child_link.title }}</a>
+                                          </li>
+                                        {%- endfor -%}
+                                      </ul>
+                                    {%- endif -%}
+                                  </div>
+                                {%- endfor -%}
+                              {%- endif -%}
+                            </div>
+
+                            <!-- Secondary Featured Image -->
+                            {%- if block.settings.mega_image_2 != blank -%}
+                              <div class="luxury-mega-menu__featured luxury-mega-menu__featured--secondary">
+                                <a href="{{ block.settings.mega_image_2_link | default: '#' }}" class="luxury-mega-menu__featured-link">
+                                  <div class="luxury-mega-menu__featured-image">
+                                    <img 
+                                      src="{{ block.settings.mega_image_2 | image_url: width: 400 }}"
+                                      alt="{{ block.settings.mega_image_2_text | default: 'Featured' }}"
+                                      loading="lazy"
+                                    >
+                                  </div>
+                                  <div class="luxury-mega-menu__featured-content">
+                                    <span class="luxury-mega-menu__featured-title">{{ block.settings.mega_image_2_text | default: 'New Arrivals' }}</span>
+                                    <span class="luxury-mega-menu__featured-cta">Explore</span>
+                                  </div>
+                                </a>
+                              </div>
+                            {%- endif -%}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {%- endif -%}
+                </li>
+            {%- endcase -%}
+          {%- endfor -%}
+        </ul>
+      </nav>
+
+      <!-- Header Actions -->
+      <div class="luxury-header__actions">
+        <!-- Search -->
+        <button class="luxury-header__action luxury-header__search-toggle" aria-label="Search" data-search-toggle>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+        </button>
+
+        <!-- Account -->
+        <a href="{{ routes.account_url }}" class="luxury-header__action luxury-header__account" aria-label="Account">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+          </svg>
+        </a>
+
+        <!-- Wishlist (optional) -->
+        {%- if section.settings.show_wishlist -%}
+        <a href="/pages/wishlist" class="luxury-header__action luxury-header__wishlist" aria-label="Wishlist">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </a>
+        {%- endif -%}
+
+        <!-- Cart -->
+        <a href="{{ routes.cart_url }}" class="luxury-header__action luxury-header__cart" aria-label="Cart">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span class="luxury-header__cart-count" data-cart-count>{{ cart.item_count }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Overlay -->
+  <div class="luxury-search-overlay" data-search-overlay>
+    <div class="luxury-search-overlay__inner">
+      <form action="{{ routes.search_url }}" method="get" class="luxury-search-overlay__form">
+        <input type="hidden" name="type" value="product">
+        <input 
+          type="search" 
+          name="q" 
+          class="luxury-search-overlay__input"
+          placeholder="Search for rings, diamonds, jewelry..."
+          autocomplete="off"
+          aria-label="Search"
+        >
+        <button type="submit" class="luxury-search-overlay__submit" aria-label="Submit search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+        </button>
+        <button type="button" class="luxury-search-overlay__close" data-search-close aria-label="Close search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </form>
+      <div class="luxury-search-overlay__suggestions">
+        <p class="luxury-search-overlay__label">Popular Searches</p>
+        <div class="luxury-search-overlay__tags">
+          {%- for i in (1..4) -%}
+            {%- assign tag_setting = 'popular_search_' | append: i -%}
+            {%- if section.settings[tag_setting] != blank -%}
+              <a href="{{ routes.search_url }}?q={{ section.settings[tag_setting] | url_encode }}&type=product" class="luxury-search-overlay__tag">
+                {{ section.settings[tag_setting] }}
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer -->
+  <div class="luxury-mobile-drawer" data-mobile-drawer>
+    <div class="luxury-mobile-drawer__overlay" data-drawer-close></div>
+    <div class="luxury-mobile-drawer__panel">
+      <div class="luxury-mobile-drawer__header">
+        <span class="luxury-mobile-drawer__title">Menu</span>
+        <button class="luxury-mobile-drawer__close" data-drawer-close aria-label="Close menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <nav class="luxury-mobile-drawer__nav">
+        <ul class="luxury-mobile-drawer__menu">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+              {%- when 'menu_item' -%}
+                <li class="luxury-mobile-drawer__item{% if block.settings.is_mega %} has-submenu{% endif %}">
+                  {%- if block.settings.is_mega and block.settings.mega_menu != blank -%}
+                    <button class="luxury-mobile-drawer__link" data-submenu-toggle>
+                      {{ block.settings.title }}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                      </svg>
+                    </button>
+                    <div class="luxury-mobile-drawer__submenu" data-submenu>
+                      <button class="luxury-mobile-drawer__back" data-submenu-back>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                        Back
+                      </button>
+                      <span class="luxury-mobile-drawer__submenu-title">{{ block.settings.title }}</span>
+                      <ul class="luxury-mobile-drawer__submenu-list">
+                        {%- assign mega_links = linklists[block.settings.mega_menu].links -%}
+                        {%- for link in mega_links -%}
+                          <li class="luxury-mobile-drawer__submenu-group">
+                            <a href="{{ link.url }}" class="luxury-mobile-drawer__submenu-title-link">{{ link.title }}</a>
+                            {%- if link.links.size > 0 -%}
+                              <ul>
+                                {%- for child_link in link.links -%}
+                                  <li>
+                                    <a href="{{ child_link.url }}" class="luxury-mobile-drawer__submenu-link">{{ child_link.title }}</a>
+                                  </li>
+                                {%- endfor -%}
+                              </ul>
+                            {%- endif -%}
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    </div>
+                  {%- else -%}
+                    <a href="{{ block.settings.link }}" class="luxury-mobile-drawer__link">
+                      {{ block.settings.title }}
+                    </a>
+                  {%- endif -%}
+                </li>
+            {%- endcase -%}
+          {%- endfor -%}
+        </ul>
+      </nav>
+      <div class="luxury-mobile-drawer__footer">
+        <a href="{{ routes.account_url }}" class="luxury-mobile-drawer__footer-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+          </svg>
+          My Account
+        </a>
+        {%- if section.settings.show_wishlist -%}
+        <a href="/pages/wishlist" class="luxury-mobile-drawer__footer-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          Wishlist
+        </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  class LuxuryHeader extends HTMLElement {
+    constructor() {
+      super();
+      this.header = this;
+      this.wrapper = this.querySelector('.luxury-header__wrapper');
+      this.isTransparent = this.dataset.transparent === 'true';
+      this.lastScrollY = 0;
+      this.scrollThreshold = 100;
+      
+      this.init();
+    }
+    
+    init() {
+      this.initSticky();
+      this.initMegaMenu();
+      this.initSearch();
+      this.initMobileDrawer();
+    }
+    
+    initSticky() {
+      if (!this.classList.contains('luxury-header--sticky')) return;
+      
+      const handleScroll = () => {
+        const scrollY = window.scrollY;
+        
+        if (scrollY > this.scrollThreshold) {
+          this.header.classList.add('is-scrolled');
+        } else {
+          this.header.classList.remove('is-scrolled');
+        }
+        
+        // Hide on scroll down, show on scroll up
+        if (scrollY > this.lastScrollY && scrollY > 200) {
+          this.header.classList.add('is-hidden');
+        } else {
+          this.header.classList.remove('is-hidden');
+        }
+        
+        this.lastScrollY = scrollY;
+      };
+      
+      window.addEventListener('scroll', handleScroll, { passive: true });
+    }
+    
+    initMegaMenu() {
+      const megaItems = this.querySelectorAll('.has-mega-menu');
+      
+      megaItems.forEach(item => {
+        const link = item.querySelector('.luxury-header__menu-link');
+        const menu = item.querySelector('.luxury-mega-menu');
+        
+        if (!menu) return;
+        
+        let timeout;
+        
+        item.addEventListener('mouseenter', () => {
+          clearTimeout(timeout);
+          this.closeAllMegas();
+          item.classList.add('is-active');
+          link.setAttribute('aria-expanded', 'true');
+        });
+        
+        item.addEventListener('mouseleave', () => {
+          timeout = setTimeout(() => {
+            item.classList.remove('is-active');
+            link.setAttribute('aria-expanded', 'false');
+          }, 150);
+        });
+        
+        // Keyboard navigation
+        link.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const isOpen = item.classList.contains('is-active');
+            this.closeAllMegas();
+            if (!isOpen) {
+              item.classList.add('is-active');
+              link.setAttribute('aria-expanded', 'true');
+              menu.querySelector('a').focus();
+            }
+          }
+        });
+      });
+      
+      // Close on escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          this.closeAllMegas();
+        }
+      });
+    }
+    
+    closeAllMegas() {
+      this.querySelectorAll('.has-mega-menu.is-active').forEach(item => {
+        item.classList.remove('is-active');
+        item.querySelector('.luxury-header__menu-link').setAttribute('aria-expanded', 'false');
+      });
+    }
+    
+    initSearch() {
+      const toggle = this.querySelector('[data-search-toggle]');
+      const overlay = this.querySelector('[data-search-overlay]');
+      const close = this.querySelector('[data-search-close]');
+      const input = overlay?.querySelector('.luxury-search-overlay__input');
+      
+      if (!toggle || !overlay) return;
+      
+      toggle.addEventListener('click', () => {
+        overlay.classList.add('is-active');
+        document.body.classList.add('overflow-hidden');
+        setTimeout(() => input?.focus(), 300);
+      });
+      
+      close?.addEventListener('click', () => {
+        overlay.classList.remove('is-active');
+        document.body.classList.remove('overflow-hidden');
+      });
+      
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          overlay.classList.remove('is-active');
+          document.body.classList.remove('overflow-hidden');
+        }
+      });
+    }
+    
+    initMobileDrawer() {
+      const toggles = this.querySelectorAll('[data-drawer-toggle]');
+      const drawer = this.querySelector('[data-mobile-drawer]');
+      const closes = this.querySelectorAll('[data-drawer-close]');
+      const submenuToggles = this.querySelectorAll('[data-submenu-toggle]');
+      const submenuBacks = this.querySelectorAll('[data-submenu-back]');
+      
+      if (!drawer) return;
+      
+      toggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          drawer.classList.add('is-active');
+          document.body.classList.add('overflow-hidden');
+        });
+      });
+      
+      closes.forEach(close => {
+        close.addEventListener('click', () => {
+          drawer.classList.remove('is-active');
+          document.body.classList.remove('overflow-hidden');
+          // Reset submenus
+          this.querySelectorAll('[data-submenu].is-active').forEach(sub => {
+            sub.classList.remove('is-active');
+          });
+        });
+      });
+      
+      submenuToggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          const submenu = toggle.nextElementSibling;
+          submenu?.classList.add('is-active');
+        });
+      });
+      
+      submenuBacks.forEach(back => {
+        back.addEventListener('click', () => {
+          const submenu = back.closest('[data-submenu]');
+          submenu?.classList.remove('is-active');
+        });
+      });
+    }
+  }
+  
+  customElements.define('luxury-header', LuxuryHeader);
+</script>
+
+{% schema %}
+{
+  "name": "Luxury Header",
+  "class": "luxury-header-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo (dark version)"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_light",
+      "label": "Logo (light version for transparent header)"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 80,
+      "max": 300,
+      "step": 10,
+      "default": 150,
+      "unit": "px",
+      "label": "Logo width"
+    },
+    {
+      "type": "header",
+      "content": "Header Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_header",
+      "label": "Transparent header on homepage",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "Enable sticky header",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "transparent_text_color",
+      "label": "Transparent header text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#c9a962"
+    },
+    {
+      "type": "header",
+      "content": "Announcement Bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Show announcement bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "Announcement text",
+      "default": "Complimentary shipping on all orders over $500"
+    },
+    {
+      "type": "select",
+      "id": "announcement_icon",
+      "label": "Announcement icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "diamond", "label": "Diamond" },
+        { "value": "gift", "label": "Gift" },
+        { "value": "shipping", "label": "Shipping" }
+      ],
+      "default": "diamond"
+    },
+    {
+      "type": "url",
+      "id": "announcement_link",
+      "label": "Announcement link"
+    },
+    {
+      "type": "text",
+      "id": "announcement_link_text",
+      "label": "Announcement link text",
+      "default": "Learn More"
+    },
+    {
+      "type": "header",
+      "content": "Additional Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Show wishlist icon",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Popular Searches"
+    },
+    {
+      "type": "text",
+      "id": "popular_search_1",
+      "label": "Popular search 1",
+      "default": "Engagement Rings"
+    },
+    {
+      "type": "text",
+      "id": "popular_search_2",
+      "label": "Popular search 2",
+      "default": "Diamonds"
+    },
+    {
+      "type": "text",
+      "id": "popular_search_3",
+      "label": "Popular search 3",
+      "default": "Wedding Bands"
+    },
+    {
+      "type": "text",
+      "id": "popular_search_4",
+      "label": "Popular search 4",
+      "default": "Solitaire"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu_item",
+      "name": "Menu Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Shop"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "checkbox",
+          "id": "is_mega",
+          "label": "Enable mega menu",
+          "default": false
+        },
+        {
+          "type": "link_list",
+          "id": "mega_menu",
+          "label": "Mega menu",
+          "info": "Select a menu with nested items"
+        },
+        {
+          "type": "image_picker",
+          "id": "mega_image",
+          "label": "Featured image"
+        },
+        {
+          "type": "text",
+          "id": "mega_image_text",
+          "label": "Featured image title",
+          "default": "New Collection"
+        },
+        {
+          "type": "url",
+          "id": "mega_image_link",
+          "label": "Featured image link"
+        },
+        {
+          "type": "image_picker",
+          "id": "mega_image_2",
+          "label": "Secondary featured image"
+        },
+        {
+          "type": "text",
+          "id": "mega_image_2_text",
+          "label": "Secondary image title"
+        },
+        {
+          "type": "url",
+          "id": "mega_image_2_link",
+          "label": "Secondary image link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Luxury Header",
+      "blocks": [
+        {
+          "type": "menu_item",
+          "settings": {
+            "title": "Engagement Rings",
+            "is_mega": true
+          }
+        },
+        {
+          "type": "menu_item",
+          "settings": {
+            "title": "Diamonds",
+            "is_mega": true
+          }
+        },
+        {
+          "type": "menu_item",
+          "settings": {
+            "title": "Wedding Bands",
+            "is_mega": false
+          }
+        },
+        {
+          "type": "menu_item",
+          "settings": {
+            "title": "Fine Jewelry",
+            "is_mega": true
+          }
+        },
+        {
+          "type": "menu_item",
+          "settings": {
+            "title": "Build Your Ring",
+            "is_mega": false
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
