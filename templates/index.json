@@ -122,6 +122,23 @@
         "heading": "Join Our Inner Circle",
         "description": "Be the first to know about exclusive collections, special offers, and jewelry inspiration."
       }
+    },
+    "ring-360-viewer": {
+      "type": "ring-360-viewer",
+      "settings": {
+        "subheading": "Interactive Experience",
+        "heading": "View Our Signature Ring in 360°",
+        "description": "<p>Experience our exquisite craftsmanship from every angle. Rotate, zoom, and explore every detail of our signature design.</p>",
+        "glb_file_url": "https://cdn.shopify.com/3d/models/f20e3fefb9cb207d/main.glb",
+        "exposure": 1,
+        "button_text": "View in 360°",
+        "modal_title": "360° Ring View",
+        "show_features": true,
+        "show_ar_button": true,
+        "background_color": "#faf9f7",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
     }
   },
   "order": [
@@ -129,6 +146,7 @@
     "featured-collections",
     "brand-story",
     "cta-banner",
+    "ring-360-viewer",
     "testimonials",
     "collection-grid-2",
     "newsletter-cta"
