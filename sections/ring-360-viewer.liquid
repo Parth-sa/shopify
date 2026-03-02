@@ -162,10 +162,10 @@
           <div class="ring-360-spinner"></div>
           <p>Loading 3D model...</p>
         </div>
-        
+
         {% if section.settings.viewer_type == 'webgi' %}
           <!-- WebGI Advanced Viewer (iframe) -->
-          <iframe 
+          <iframe
             id="ring360Viewer-{{ section.id }}"
             class="ring-360-webgi-iframe"
             src="{{ section.settings.webgi_viewer_url }}{% if section.settings.glb_file_url != blank %}?model={{ section.settings.glb_file_url | url_encode }}{% endif %}"
@@ -240,7 +240,7 @@
 
     function initViewer() {
       console.log('Initializing 360 viewer for section:', sectionId);
-      
+
       const section = document.querySelector('.section-' + sectionId);
       if (!section) {
         console.error('360 Viewer: Section not found for id:', sectionId);
@@ -277,7 +277,7 @@
           if (loader) {
             loader.style.display = 'flex';
           }
-          
+
           // Set the GLB source after modal opens
           if (viewer && glbUrl) {
             console.log('Setting GLB source:', glbUrl);
@@ -314,7 +314,7 @@
 
       // Check if using WebGI iframe or model-viewer
       const isWebGI = viewer && viewer.tagName === 'IFRAME';
-      
+
       // Model viewer events (only for standard viewer)
       if (viewer && !isWebGI) {
         viewer.addEventListener('load', function () {
@@ -332,10 +332,10 @@
           }
         });
       }
-      
+
       // WebGI iframe events
       if (viewer && isWebGI) {
-        viewer.addEventListener('load', function() {
+        viewer.addEventListener('load', function () {
           console.log('WebGI viewer loaded');
           if (loader) {
             loader.style.display = 'none';
