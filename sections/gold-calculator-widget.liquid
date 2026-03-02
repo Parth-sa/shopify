@@ -1,0 +1,366 @@
+{% comment %}
+  GOLD CALCULATOR WIDGET
+  ======================
+  Interactive gold pricing calculator
+  Allows customers to estimate jewelry prices based on weight and purity
+{% endcomment %}
+
+{{ 'gold-pricing.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'gold-calculator.js' | asset_url }}" defer></script>
+
+{% style %}
+  #GoldCalc-{{ section.id }} {
+    --calc-bg: {{ section.settings.background_color }};
+    --calc-card-bg: {{ section.settings.card_background }};
+    --calc-accent: {{ section.settings.accent_color }};
+    --calc-text: {{ section.settings.text_color }};
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+{% endstyle %}
+
+<section id="GoldCalc-{{ section.id }}" class="gold-calculator-section">
+  <div class="page-width">
+    <!-- Section Header -->
+    <div class="gold-calculator-section__header">
+      {% if section.settings.subtitle != blank %}
+        <span class="gold-calculator-section__subtitle">{{ section.settings.subtitle }}</span>
+      {% endif %}
+      {% if section.settings.title != blank %}
+        <h2 class="gold-calculator-section__title">{{ section.settings.title }}</h2>
+      {% endif %}
+      {% if section.settings.description != blank %}
+        <p class="gold-calculator-section__description">{{ section.settings.description }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Calculator Widget -->
+    <gold-calculator
+      class="gold-calculator"
+      data-gst-rate="{{ section.settings.gst_rate }}"
+      data-currency-symbol="{{ section.settings.currency_symbol }}"
+      data-default-making="{{ section.settings.default_making }}"
+    >
+      <div class="gold-calculator__container">
+        <!-- Left Panel - Inputs -->
+        <div class="gold-calculator__inputs">
+          <!-- Current Rate Display -->
+          <div class="gold-calculator__rate-panel">
+            <div data-display="current-rate" class="gold-calculator__rate-info">
+              <span class="gold-calculator__rate-label">Gold Rate:</span>
+              <span class="gold-calculator__rate-value">Loading...</span>
+            </div>
+            <div data-display="rate-status" class="gold-calculator__status gold-calculator__status--waiting">
+              <span class="gold-calculator__status-dot"></span>
+              <span class="gold-calculator__status-text">Waiting for rates...</span>
+            </div>
+          </div>
+
+          <!-- Weight Input -->
+          <div class="gold-calculator__field">
+            <label for="calc-weight-{{ section.id }}" class="gold-calculator__label">
+              Gold Weight (grams)
+            </label>
+            <div class="gold-calculator__input-wrapper">
+              <input
+                type="number"
+                id="calc-weight-{{ section.id }}"
+                data-input="weight"
+                class="gold-calculator__input"
+                placeholder="Enter weight"
+                min="0"
+                step="0.01"
+                value="5"
+              >
+              <span class="gold-calculator__unit">gm</span>
+            </div>
+            <!-- Quick Weight Buttons -->
+            <div class="gold-calculator__quick-btns">
+              <button type="button" data-weight="2" class="gold-calculator__quick-btn">2g</button>
+              <button type="button" data-weight="5" class="gold-calculator__quick-btn">5g</button>
+              <button type="button" data-weight="10" class="gold-calculator__quick-btn">10g</button>
+              <button type="button" data-weight="20" class="gold-calculator__quick-btn">20g</button>
+              <button type="button" data-weight="50" class="gold-calculator__quick-btn">50g</button>
+            </div>
+          </div>
+
+          <!-- Purity Selection -->
+          <div class="gold-calculator__field">
+            <label class="gold-calculator__label">Gold Purity</label>
+            {% assign purity_list = section.settings.purity_options | split: ',' %}
+            <div class="gold-calculator__purity-btns">
+              {% for purity in purity_list %}
+                {% assign purity_clean = purity | strip | downcase %}
+                <button 
+                  type="button" 
+                  data-purity="{{ purity_clean }}" 
+                  class="gold-calculator__purity-btn{% if purity_clean == '22k' %} active{% endif %}"
+                >
+                  {{ purity_clean | upcase }}
+                </button>
+              {% endfor %}
+            </div>
+            <select data-input="purity" class="gold-calculator__select gold-calculator__select--hidden">
+              {% for purity in purity_list %}
+                {% assign purity_clean = purity | strip | downcase %}
+                <option value="{{ purity_clean }}"{% if purity_clean == '22k' %} selected{% endif %}>
+                  {{ purity_clean | upcase }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Making Charges -->
+          <div class="gold-calculator__field">
+            <label for="calc-making-{{ section.id }}" class="gold-calculator__label">
+              Making Charges
+            </label>
+            <div class="gold-calculator__making-row">
+              <input
+                type="number"
+                id="calc-making-{{ section.id }}"
+                data-input="making"
+                class="gold-calculator__input Gold-calculator__input--making"
+                placeholder="Making charge"
+                min="0"
+                step="1"
+                value="{{ section.settings.default_making }}"
+              >
+              <select data-input="making-type" class="gold-calculator__select gold-calculator__select--type">
+                <option value="percentage">% of Gold</option>
+                <option value="pergram">₹ per gram</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Stone Cost (Optional) -->
+          <div class="gold-calculator__field">
+            <label for="calc-stone-{{ section.id }}" class="gold-calculator__label">
+              Stone/Diamond Value (optional)
+            </label>
+            <div class="gold-calculator__input-wrapper">
+              <span class="gold-calculator__currency">{{ section.settings.currency_symbol }}</span>
+              <input
+                type="number"
+                id="calc-stone-{{ section.id }}"
+                data-input="stone"
+                class="gold-calculator__input gold-calculator__input--currency"
+                placeholder="0"
+                min="0"
+                step="100"
+                value="0"
+              >
+            </div>
+          </div>
+
+          <!-- GST Toggle -->
+          {% if section.settings.show_gst_toggle %}
+          <div class="gold-calculator__field gold-calculator__field--toggle">
+            <label class="gold-calculator__toggle">
+              <input type="checkbox" data-input="gst" checked>
+              <span class="gold-calculator__toggle-slider"></span>
+              <span class="gold-calculator__toggle-label">
+                Include GST ({{ section.settings.gst_rate }}%)
+              </span>
+            </label>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Right Panel - Results -->
+        <div class="gold-calculator__results">
+          <h3 class="gold-calculator__results-title">Price Estimate</h3>
+          
+          <div class="gold-calculator__result-rows">
+            <div class="gold-calculator__result-row">
+              <span class="gold-calculator__result-label">Gold Value</span>
+              <span data-result="gold-value" class="gold-calculator__result-value">
+                {{ section.settings.currency_symbol }}--
+              </span>
+            </div>
+            
+            <div class="gold-calculator__result-row">
+              <span class="gold-calculator__result-label">Making Charges</span>
+              <span data-result="making-value" class="gold-calculator__result-value">
+                {{ section.settings.currency_symbol }}--
+              </span>
+            </div>
+            
+            <div class="gold-calculator__result-row">
+              <span class="gold-calculator__result-label">Stone Value</span>
+              <span data-result="stone-value" class="gold-calculator__result-value">
+                {{ section.settings.currency_symbol }}0
+              </span>
+            </div>
+            
+            <div class="gold-calculator__result-row gold-calculator__result-row--subtotal">
+              <span class="gold-calculator__result-label">Subtotal</span>
+              <span data-result="subtotal" class="gold-calculator__result-value">
+                {{ section.settings.currency_symbol }}--
+              </span>
+            </div>
+            
+            <div class="gold-calculator__result-row" data-row="gst">
+              <span class="gold-calculator__result-label">GST ({{ section.settings.gst_rate }}%)</span>
+              <span data-result="gst-value" class="gold-calculator__result-value">
+                {{ section.settings.currency_symbol }}--
+              </span>
+            </div>
+            
+            <div class="gold-calculator__result-row gold-calculator__result-row--total">
+              <span class="gold-calculator__result-label">Estimated Total</span>
+              <span data-result="total" class="gold-calculator__result-value">
+                {{ section.settings.currency_symbol }}--
+              </span>
+            </div>
+          </div>
+
+          <!-- Disclaimer -->
+          <div class="gold-calculator__disclaimer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4M12 8h.01"/>
+            </svg>
+            <span>{{ section.settings.disclaimer_text }}</span>
+          </div>
+        </div>
+      </div>
+    </gold-calculator>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Gold Calculator",
+  "tag": "section",
+  "class": "gold-calculator-section-wrapper",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Price Estimator"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Gold Calculator"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Calculate the estimated price of gold jewelry based on weight, purity, and making charges."
+    },
+    {
+      "type": "header",
+      "content": "Calculator Settings"
+    },
+    {
+      "type": "text",
+      "id": "currency_symbol",
+      "label": "Currency symbol",
+      "default": "₹"
+    },
+    {
+      "type": "text",
+      "id": "purity_options",
+      "label": "Purity options",
+      "info": "Comma-separated: 24k,22k,18k,14k",
+      "default": "24k,22k,18k,14k"
+    },
+    {
+      "type": "range",
+      "id": "default_making",
+      "label": "Default making charge (%)",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "checkbox",
+      "id": "show_gst_toggle",
+      "label": "Show GST toggle",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "gst_rate",
+      "label": "GST rate (%)",
+      "min": 0,
+      "max": 18,
+      "step": 0.5,
+      "default": 3
+    },
+    {
+      "type": "textarea",
+      "id": "disclaimer_text",
+      "label": "Disclaimer text",
+      "default": "This is an estimate only. Actual prices may vary based on design complexity, current gold rates, and other factors."
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#f8f6f3"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#c9a962"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 60,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gold Calculator"
+    }
+  ]
+}
+{% endschema %}

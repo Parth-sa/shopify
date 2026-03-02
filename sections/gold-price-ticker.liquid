@@ -1,0 +1,381 @@
+{% comment %}
+  GOLD PRICE TICKER
+  =================
+  Live gold rates display with auto-refresh
+  Shows 24K, 22K, 18K, 14K prices
+{% endcomment %}
+
+{{ 'gold-pricing.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #GoldTicker-{{ section.id }} {
+    --ticker-bg: {{ section.settings.background_color }};
+    --ticker-text: {{ section.settings.text_color }};
+    --ticker-accent: {{ section.settings.accent_color }};
+    --ticker-positive: {{ section.settings.positive_color }};
+    --ticker-negative: {{ section.settings.negative_color }};
+  }
+{% endstyle %}
+
+<section 
+  id="GoldTicker-{{ section.id }}"
+  class="gold-ticker"
+  data-section-id="{{ section.id }}"
+  data-api-key="{{ section.settings.api_key }}"
+  data-currency="{{ section.settings.currency }}"
+  data-refresh-interval="{{ section.settings.refresh_interval }}"
+  data-manual-rate="{{ section.settings.manual_gold_rate }}"
+  data-use-manual="{{ section.settings.use_manual_rate }}"
+>
+  <div class="gold-ticker__container">
+    <!-- Live Indicator -->
+    <div class="gold-ticker__live">
+      <span class="gold-ticker__live-dot"></span>
+      <span class="gold-ticker__live-text">Live Gold Rates</span>
+    </div>
+
+    <!-- Gold Rates Grid -->
+    <div class="gold-ticker__rates">
+      <!-- 24K Gold -->
+      <div class="gold-ticker__rate-card" data-karat="24">
+        <div class="gold-ticker__karat">
+          <span class="gold-ticker__karat-value">24K</span>
+          <span class="gold-ticker__purity">99.9% Pure</span>
+        </div>
+        <div class="gold-ticker__price">
+          <span class="gold-ticker__currency">{{ section.settings.currency_symbol }}</span>
+          <span class="gold-ticker__amount" data-rate="24k">--</span>
+          <span class="gold-ticker__unit">/gm</span>
+        </div>
+        <div class="gold-ticker__change" data-change="24k">
+          <span class="gold-ticker__change-value">--</span>
+        </div>
+      </div>
+
+      <!-- 22K Gold -->
+      <div class="gold-ticker__rate-card" data-karat="22">
+        <div class="gold-ticker__karat">
+          <span class="gold-ticker__karat-value">22K</span>
+          <span class="gold-ticker__purity">91.6% Pure</span>
+        </div>
+        <div class="gold-ticker__price">
+          <span class="gold-ticker__currency">{{ section.settings.currency_symbol }}</span>
+          <span class="gold-ticker__amount" data-rate="22k">--</span>
+          <span class="gold-ticker__unit">/gm</span>
+        </div>
+        <div class="gold-ticker__change" data-change="22k">
+          <span class="gold-ticker__change-value">--</span>
+        </div>
+      </div>
+
+      <!-- 18K Gold -->
+      <div class="gold-ticker__rate-card" data-karat="18">
+        <div class="gold-ticker__karat">
+          <span class="gold-ticker__karat-value">18K</span>
+          <span class="gold-ticker__purity">75% Pure</span>
+        </div>
+        <div class="gold-ticker__price">
+          <span class="gold-ticker__currency">{{ section.settings.currency_symbol }}</span>
+          <span class="gold-ticker__amount" data-rate="18k">--</span>
+          <span class="gold-ticker__unit">/gm</span>
+        </div>
+        <div class="gold-ticker__change" data-change="18k">
+          <span class="gold-ticker__change-value">--</span>
+        </div>
+      </div>
+
+      <!-- 14K Gold -->
+      <div class="gold-ticker__rate-card" data-karat="14">
+        <div class="gold-ticker__karat">
+          <span class="gold-ticker__karat-value">14K</span>
+          <span class="gold-ticker__purity">58.3% Pure</span>
+        </div>
+        <div class="gold-ticker__price">
+          <span class="gold-ticker__currency">{{ section.settings.currency_symbol }}</span>
+          <span class="gold-ticker__amount" data-rate="14k">--</span>
+          <span class="gold-ticker__unit">/gm</span>
+        </div>
+        <div class="gold-ticker__change" data-change="14k">
+          <span class="gold-ticker__change-value">--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Last Updated -->
+    <div class="gold-ticker__meta">
+      <span class="gold-ticker__updated">
+        Last updated: <span data-last-updated>--</span>
+      </span>
+      <button type="button" class="gold-ticker__refresh" aria-label="Refresh rates">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 4v6h-6M1 20v-6h6"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function() {
+    const ticker = document.getElementById('GoldTicker-{{ section.id }}');
+    if (!ticker) return;
+
+    const config = {
+      apiKey: ticker.dataset.apiKey || '',
+      currency: ticker.dataset.currency || 'INR',
+      refreshInterval: (parseInt(ticker.dataset.refreshInterval) || 300) * 1000, // Convert seconds to ms
+      manualRate: parseFloat(ticker.dataset.manualRate) || 0,
+      useManual: ticker.dataset.useManual === 'true'
+    };
+
+    // Purity percentages for different karats
+    const purityFactors = {
+      '24k': 1,
+      '22k': 0.916,
+      '18k': 0.75,
+      '14k': 0.583
+    };
+
+    let lastRate24K = null;
+
+    async function fetchGoldRate() {
+      try {
+        // If using manual rate, use that
+        if (config.useManual && config.manualRate > 0) {
+          updateRates(config.manualRate, 0);
+          return;
+        }
+
+        // Try multiple APIs
+        let rate24K = null;
+        let change = 0;
+
+        // Option 1: GoldAPI.io (requires API key)
+        if (config.apiKey) {
+          try {
+            const response = await fetch(`https://www.goldapi.io/api/XAU/${config.currency}`, {
+              headers: { 'x-access-token': config.apiKey }
+            });
+            const data = await response.json();
+            if (data.price_gram_24k) {
+              rate24K = data.price_gram_24k;
+              change = data.ch || 0;
+            }
+          } catch (e) {
+            console.log('GoldAPI fetch failed, trying alternative');
+          }
+        }
+
+        // Option 2: Use stored/cached rate from app proxy
+        if (!rate24K) {
+          try {
+            const response = await fetch('/apps/gold-rates/current');
+            const data = await response.json();
+            if (data.rate_24k) {
+              rate24K = data.rate_24k;
+              change = data.change || 0;
+            }
+          } catch (e) {
+            console.log('App proxy fetch failed');
+          }
+        }
+
+        // Option 3: Fallback to manual rate
+        if (!rate24K && config.manualRate > 0) {
+          rate24K = config.manualRate;
+        }
+
+        if (rate24K) {
+          updateRates(rate24K, change);
+        }
+
+      } catch (error) {
+        console.error('Error fetching gold rate:', error);
+      }
+    }
+
+    function updateRates(rate24K, changePercent) {
+      // Calculate rates for all karats
+      Object.keys(purityFactors).forEach(karat => {
+        const rate = rate24K * purityFactors[karat];
+        const rateElement = ticker.querySelector(`[data-rate="${karat}"]`);
+        const changeElement = ticker.querySelector(`[data-change="${karat}"] .gold-ticker__change-value`);
+        
+        if (rateElement) {
+          rateElement.textContent = formatCurrency(rate);
+        }
+
+        if (changeElement) {
+          const changeValue = changePercent * purityFactors[karat];
+          changeElement.textContent = (changePercent >= 0 ? '+' : '') + changePercent.toFixed(2) + '%';
+          changeElement.parentElement.classList.toggle('gold-ticker__change--positive', changePercent >= 0);
+          changeElement.parentElement.classList.toggle('gold-ticker__change--negative', changePercent < 0);
+        }
+      });
+
+      // Update timestamp
+      const timestampElement = ticker.querySelector('[data-last-updated]');
+      if (timestampElement) {
+        timestampElement.textContent = new Date().toLocaleTimeString();
+      }
+
+      // Store rate for product calculations
+      window.GoldRates = {
+        rate24K: rate24K,
+        currency: config.currency,
+        lastUpdated: new Date().toISOString(),
+        rates: {
+          '24k': rate24K,
+          '22k': rate24K * purityFactors['22k'],
+          '18k': rate24K * purityFactors['18k'],
+          '14k': rate24K * purityFactors['14k']
+        }
+      };
+
+      // Dispatch event for other components
+      document.dispatchEvent(new CustomEvent('goldRatesUpdated', { detail: window.GoldRates }));
+    }
+
+    function formatCurrency(value) {
+      return new Intl.NumberFormat('en-IN', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(Math.round(value));
+    }
+
+    // Refresh button
+    const refreshBtn = ticker.querySelector('.gold-ticker__refresh');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => {
+        refreshBtn.classList.add('is-loading');
+        fetchGoldRate().finally(() => {
+          setTimeout(() => refreshBtn.classList.remove('is-loading'), 500);
+        });
+      });
+    }
+
+    // Initial fetch
+    fetchGoldRate();
+
+    // Auto refresh
+    if (config.refreshInterval > 0) {
+      setInterval(fetchGoldRate, config.refreshInterval);
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Gold Price Ticker",
+  "tag": "section",
+  "class": "gold-ticker-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "API Configuration"
+    },
+    {
+      "type": "paragraph",
+      "content": "Configure gold rate source. Get API key from goldapi.io or use manual rates."
+    },
+    {
+      "type": "text",
+      "id": "api_key",
+      "label": "Gold API Key",
+      "info": "Optional: Get free key from goldapi.io"
+    },
+    {
+      "type": "select",
+      "id": "currency",
+      "label": "Currency",
+      "options": [
+        { "value": "INR", "label": "Indian Rupee (₹)" },
+        { "value": "USD", "label": "US Dollar ($)" },
+        { "value": "EUR", "label": "Euro (€)" },
+        { "value": "GBP", "label": "British Pound (£)" },
+        { "value": "AED", "label": "UAE Dirham (AED)" }
+      ],
+      "default": "INR"
+    },
+    {
+      "type": "text",
+      "id": "currency_symbol",
+      "label": "Currency symbol",
+      "default": "₹"
+    },
+    {
+      "type": "header",
+      "content": "Manual Rate"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_manual_rate",
+      "label": "Use manual gold rate",
+      "default": true,
+      "info": "Enable to set rate manually instead of API"
+    },
+    {
+      "type": "text",
+      "id": "manual_gold_rate",
+      "label": "24K Gold rate per gram",
+      "default": "7500",
+      "info": "Enter current 24K gold rate"
+    },
+    {
+      "type": "header",
+      "content": "Settings"
+    },
+    {
+      "type": "range",
+      "id": "refresh_interval",
+      "label": "Auto-refresh (seconds)",
+      "min": 60,
+      "max": 600,
+      "step": 30,
+      "default": 300,
+      "unit": "s",
+      "info": "Time between rate updates (1-10 min)"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#c9a962"
+    },
+    {
+      "type": "color",
+      "id": "positive_color",
+      "label": "Positive change color",
+      "default": "#22c55e"
+    },
+    {
+      "type": "color",
+      "id": "negative_color",
+      "label": "Negative change color",
+      "default": "#ef4444"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gold Price Ticker"
+    }
+  ]
+}
+{% endschema %}
