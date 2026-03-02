@@ -239,9 +239,11 @@
     const glbUrl = '{{ section.settings.glb_file_url }}';
 
     function initViewer() {
+      console.log('Initializing 360 viewer for section:', sectionId);
+      
       const section = document.querySelector('.section-' + sectionId);
       if (!section) {
-        console.error('360 Viewer: Section not found');
+        console.error('360 Viewer: Section not found for id:', sectionId);
         return;
       }
 
@@ -251,8 +253,10 @@
       const loader = document.getElementById('ring360Loader-' + sectionId);
       const arButton = document.getElementById('arButton-' + sectionId);
 
-      if (!modal || !viewer) {
-        console.error('360 Viewer: Modal or viewer not found');
+      console.log('Elements found:', { trigger: !!trigger, modal: !!modal, viewer: !!viewer, loader: !!loader });
+
+      if (!modal) {
+        console.error('360 Viewer: Modal not found');
         return;
       }
 
@@ -262,12 +266,8 @@
       if (trigger) {
         trigger.addEventListener('click', function (e) {
           e.preventDefault();
-          console.log('360 button clicked, opening modal...');
-
-          // Set the GLB source
-          if (glbUrl && viewer.getAttribute('src') !== glbUrl) {
-            viewer.setAttribute('src', glbUrl);
-          }
+          e.stopPropagation();
+          console.log('360 button clicked, opening modal...', glbUrl);
 
           modal.classList.add('is-open');
           modal.setAttribute('aria-hidden', 'false');
@@ -277,7 +277,16 @@
           if (loader) {
             loader.style.display = 'flex';
           }
+          
+          // Set the GLB source after modal opens
+          if (viewer && glbUrl) {
+            console.log('Setting GLB source:', glbUrl);
+            viewer.setAttribute('src', glbUrl);
+          }
         });
+        console.log('Click listener attached to trigger button');
+      } else {
+        console.error('360 Viewer: Trigger button not found');
       }
 
       // Close modal
