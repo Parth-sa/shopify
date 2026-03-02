@@ -109,10 +109,6 @@
 
   <script>
     (function() {
-      // Prevent duplicate initialization
-      if (window.product360ViewerInitialized) return;
-      window.product360ViewerInitialized = true;
-      
       function initProduct360Viewer() {
         const triggers = document.querySelectorAll('[data-product-360-trigger]');
         const modal = document.getElementById('product360Modal');
@@ -120,14 +116,24 @@
         const loader = document.getElementById('product360Loader');
         const titleEl = modal ? modal.querySelector('.product-360-modal-title') : null;
         
-        if (!modal || !viewer) {
-          console.error('Product 360 Viewer: Modal or viewer not found');
+        // Only proceed if we have triggers and modal elements
+        if (!triggers.length || !modal || !viewer) {
           return;
         }
+        
+        // Skip if already initialized for this modal
+        if (modal.dataset.initialized === 'true') {
+          return;
+        }
+        modal.dataset.initialized = 'true';
         
         const closeButtons = modal.querySelectorAll('[data-product-360-close]');
         
         triggers.forEach(function(trigger) {
+          // Skip if already has listener
+          if (trigger.dataset.listenerAttached === 'true') return;
+          trigger.dataset.listenerAttached = 'true';
+          
           trigger.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
