@@ -1,0 +1,599 @@
+{% comment %}
+  ============================================================================
+  RING BUILDER SECTION
+  ============================================================================
+  A premium multi-step ring customization experience for jewelry stores.
+
+  Features:
+  - Step-based navigation with progress indicator
+  - Product selection from Ring Settings and Diamonds collections
+  - Live price calculation
+  - Sticky preview panel (desktop)
+  - Mobile-optimized swipe grids
+  - AJAX cart integration with custom properties
+  - Skeleton loading states
+  - Accessibility compliant
+  - 3D viewer placeholder for future integration
+
+  Collections Required:
+  - ring-settings: Ring band/mounting products
+  - diamonds: Diamond/gemstone products
+
+  Author: Ring Builder System
+  Version: 2.0.0
+  ============================================================================
+{% endcomment %}
+
+{{ 'ring-builder.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign ring_collection = collections[section.settings.ring_collection]
+  assign diamond_collection = collections[section.settings.diamond_collection]
+  assign accent_color = section.settings.accent_color | default: '#c9a050'
+-%}
+
+{%- style -%}
+  .ring-builder {
+    --rb-accent: {{ accent_color }};
+    --rb-accent-rgb: {{ accent_color | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+  }
+
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<section
+  id="RingBuilder"
+  class="ring-builder section-{{ section.id }}-padding color-{{ section.settings.color_scheme }}"
+  data-section-id="{{ section.id }}"
+  data-ring-collection="{{ section.settings.ring_collection }}"
+  data-diamond-collection="{{ section.settings.diamond_collection }}"
+  aria-label="Ring Builder Customization"
+>
+  <!-- ====== HEADER ====== -->
+  <header class="rb-header">
+    <div class="page-width">
+      <h1 class="rb-header__title">{{ section.settings.heading }}</h1>
+      <p class="rb-header__subtitle">{{ section.settings.subheading }}</p>
+    </div>
+  </header>
+
+  <!-- ====== PROGRESS BAR ====== -->
+  <nav class="rb-progress" aria-label="Ring Builder Steps">
+    <div class="page-width">
+      <ol class="rb-progress__steps">
+        <li class="rb-progress__step active" data-step="1">
+          <button class="rb-progress__btn" aria-current="step" aria-label="Step 1: {{ section.settings.step1_title }}">
+            <span class="rb-progress__number">1</span>
+            <span class="rb-progress__label">{{ section.settings.step1_title }}</span>
+          </button>
+        </li>
+        <li class="rb-progress__connector">
+          <span class="rb-progress__line"></span>
+        </li>
+        <li class="rb-progress__step" data-step="2">
+          <button class="rb-progress__btn" disabled aria-label="Step 2: {{ section.settings.step2_title }}">
+            <span class="rb-progress__number">2</span>
+            <span class="rb-progress__label">{{ section.settings.step2_title }}</span>
+          </button>
+        </li>
+        <li class="rb-progress__connector">
+          <span class="rb-progress__line"></span>
+        </li>
+        <li class="rb-progress__step" data-step="3">
+          <button class="rb-progress__btn" disabled aria-label="Step 3: {{ section.settings.step3_title }}">
+            <span class="rb-progress__number">3</span>
+            <span class="rb-progress__label">{{ section.settings.step3_title }}</span>
+          </button>
+        </li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- ====== MAIN CONTENT AREA ====== -->
+  <div class="rb-main">
+    <div class="page-width">
+      <div class="rb-layout">
+        <!-- ====== PANELS CONTAINER ====== -->
+        <div class="rb-panels">
+          <!-- ====== STEP 1: RING SETTINGS ====== -->
+          <div class="rb-panel active" id="RbPanel1" data-panel="1" role="tabpanel" aria-labelledby="step-1-btn">
+            <div class="rb-panel__header">
+              <span class="rb-panel__step-label">Step 1 of 3</span>
+              <h2 class="rb-panel__title">{{ section.settings.step1_title }}</h2>
+              <p class="rb-panel__description">{{ section.settings.step1_description }}</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="rb-filters" id="RingFilters" role="group" aria-label="Filter ring settings">
+              <button class="rb-filter active" data-filter="all" aria-pressed="true">All Styles</button>
+              <button class="rb-filter" data-filter="solitaire" aria-pressed="false">Solitaire</button>
+              <button class="rb-filter" data-filter="halo" aria-pressed="false">Halo</button>
+              <button class="rb-filter" data-filter="vintage" aria-pressed="false">Vintage</button>
+              <button class="rb-filter" data-filter="three-stone" aria-pressed="false">Three Stone</button>
+            </div>
+
+            <!-- Product Grid with Skeleton Loading -->
+            <div class="rb-grid rb-grid--rings" id="RingGrid" role="listbox" aria-label="Ring settings">
+              {%- if ring_collection.products.size > 0 -%}
+                {%- for product in ring_collection.products limit: 20 -%}
+                  {% render 'ring-builder-card',
+                    product: product,
+                    type: 'ring',
+                    index: forloop.index,
+                    show_specs: section.settings.show_ring_specs
+                  %}
+                {%- endfor -%}
+              {%- else -%}
+                <!-- Skeleton placeholders when no products -->
+                {%- for i in (1..8) -%}
+                  <div class="rb-card rb-card--skeleton">
+                    <div class="rb-card__media skeleton"></div>
+                    <div class="rb-card__body">
+                      <div class="skeleton skeleton--text"></div>
+                      <div class="skeleton skeleton--text skeleton--short"></div>
+                      <div class="skeleton skeleton--text skeleton--price"></div>
+                    </div>
+                  </div>
+                {%- endfor -%}
+                <p class="rb-empty">
+                  No ring settings found. Add products to the "{{ section.settings.ring_collection }}" collection.
+                </p>
+              {%- endif -%}
+            </div>
+          </div>
+
+          <!-- ====== STEP 2: DIAMONDS ====== -->
+          <div class="rb-panel" id="RbPanel2" data-panel="2" role="tabpanel" aria-labelledby="step-2-btn" hidden>
+            <div class="rb-panel__header">
+              <span class="rb-panel__step-label">Step 2 of 3</span>
+              <h2 class="rb-panel__title">{{ section.settings.step2_title }}</h2>
+              <p class="rb-panel__description">{{ section.settings.step2_description }}</p>
+            </div>
+
+            <!-- Diamond Shape Filters -->
+            <div
+              class="rb-filters rb-filters--shapes"
+              id="DiamondFilters"
+              role="group"
+              aria-label="Filter diamonds by shape"
+            >
+              <button class="rb-filter active" data-filter="all" aria-pressed="true">
+                <span class="rb-filter__icon">💎</span>
+                <span>All</span>
+              </button>
+              <button class="rb-filter" data-filter="round" aria-pressed="false">
+                <span class="rb-filter__icon">○</span>
+                <span>Round</span>
+              </button>
+              <button class="rb-filter" data-filter="princess" aria-pressed="false">
+                <span class="rb-filter__icon">□</span>
+                <span>Princess</span>
+              </button>
+              <button class="rb-filter" data-filter="oval" aria-pressed="false">
+                <span class="rb-filter__icon">⬭</span>
+                <span>Oval</span>
+              </button>
+              <button class="rb-filter" data-filter="cushion" aria-pressed="false">
+                <span class="rb-filter__icon">▢</span>
+                <span>Cushion</span>
+              </button>
+              <button class="rb-filter" data-filter="emerald" aria-pressed="false">
+                <span class="rb-filter__icon">▭</span>
+                <span>Emerald</span>
+              </button>
+              <button class="rb-filter" data-filter="pear" aria-pressed="false">
+                <span class="rb-filter__icon">◇</span>
+                <span>Pear</span>
+              </button>
+              <button class="rb-filter" data-filter="marquise" aria-pressed="false">
+                <span class="rb-filter__icon">◊</span>
+                <span>Marquise</span>
+              </button>
+            </div>
+
+            <!-- Diamond Grid (Mobile Swipeable) -->
+            <div class="rb-grid rb-grid--diamonds" id="DiamondGrid" role="listbox" aria-label="Diamonds">
+              {%- if diamond_collection.products.size > 0 -%}
+                {%- for product in diamond_collection.products limit: 24 -%}
+                  {% render 'ring-builder-card',
+                    product: product,
+                    type: 'diamond',
+                    index: forloop.index,
+                    show_specs: section.settings.show_diamond_specs
+                  %}
+                {%- endfor -%}
+              {%- else -%}
+                {%- for i in (1..8) -%}
+                  <div class="rb-card rb-card--skeleton">
+                    <div class="rb-card__media skeleton"></div>
+                    <div class="rb-card__body">
+                      <div class="skeleton skeleton--text"></div>
+                      <div class="skeleton skeleton--text skeleton--short"></div>
+                      <div class="skeleton skeleton--text skeleton--price"></div>
+                    </div>
+                  </div>
+                {%- endfor -%}
+                <p class="rb-empty">
+                  No diamonds found. Add products to the "{{ section.settings.diamond_collection }}" collection.
+                </p>
+              {%- endif -%}
+            </div>
+
+            <!-- Back Button -->
+            <div class="rb-nav">
+              <button class="rb-btn rb-btn--ghost" id="BackToStep1" type="button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Settings
+              </button>
+            </div>
+          </div>
+
+          <!-- ====== STEP 3: REVIEW ====== -->
+          <div class="rb-panel" id="RbPanel3" data-panel="3" role="tabpanel" aria-labelledby="step-3-btn" hidden>
+            <div class="rb-panel__header">
+              <span class="rb-panel__step-label">Step 3 of 3</span>
+              <h2 class="rb-panel__title">{{ section.settings.step3_title }}</h2>
+              <p class="rb-panel__description">{{ section.settings.step3_description }}</p>
+            </div>
+
+            <!-- 3D Preview Placeholder -->
+            {%- if section.settings.enable_3d_preview -%}
+              <div class="rb-3d-viewer" id="ring-3d-viewer" aria-label="3D Ring Preview">
+                <div class="rb-3d-viewer__placeholder">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                  <p>3D Preview Coming Soon</p>
+                </div>
+              </div>
+            {%- endif -%}
+
+            <!-- Review Cards -->
+            <div class="rb-review">
+              <!-- Selected Ring -->
+              <article class="rb-review__card" id="ReviewRingCard">
+                <div class="rb-review__media">
+                  <img src="" alt="" id="ReviewRingImage" loading="lazy">
+                </div>
+                <div class="rb-review__content">
+                  <span class="rb-review__label">Ring Setting</span>
+                  <h3 class="rb-review__title" id="ReviewRingTitle">—</h3>
+                  <div class="rb-review__specs" id="ReviewRingSpecs"></div>
+                  <p class="rb-review__price" id="ReviewRingPrice">—</p>
+                  <button class="rb-review__edit" data-goto="1" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Change
+                  </button>
+                </div>
+              </article>
+
+              <!-- Plus Icon -->
+              <div class="rb-review__plus" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </div>
+
+              <!-- Selected Diamond -->
+              <article class="rb-review__card" id="ReviewDiamondCard">
+                <div class="rb-review__media">
+                  <img src="" alt="" id="ReviewDiamondImage" loading="lazy">
+                </div>
+                <div class="rb-review__content">
+                  <span class="rb-review__label">Diamond</span>
+                  <h3 class="rb-review__title" id="ReviewDiamondTitle">—</h3>
+                  <div class="rb-review__specs" id="ReviewDiamondSpecs"></div>
+                  <p class="rb-review__price" id="ReviewDiamondPrice">—</p>
+                  <button class="rb-review__edit" data-goto="2" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Change
+                  </button>
+                </div>
+              </article>
+            </div>
+
+            <!-- Total & Add to Cart -->
+            <div class="rb-checkout">
+              <div class="rb-checkout__summary">
+                <div class="rb-checkout__row">
+                  <span>Ring Setting</span>
+                  <span id="CheckoutRingPrice">—</span>
+                </div>
+                <div class="rb-checkout__row">
+                  <span>Diamond</span>
+                  <span id="CheckoutDiamondPrice">—</span>
+                </div>
+                <div class="rb-checkout__divider"></div>
+                <div class="rb-checkout__row rb-checkout__row--total">
+                  <span>Total</span>
+                  <span id="CheckoutTotalPrice">—</span>
+                </div>
+              </div>
+
+              <div class="rb-checkout__actions">
+                <button class="rb-btn rb-btn--ghost" id="BackToStep2" type="button">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                  Back
+                </button>
+                <button class="rb-btn rb-btn--primary rb-btn--lg" id="AddToCartBtn" type="button">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                  </svg>
+                  <span>Add to Cart</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Trust Badges -->
+            <div class="rb-trust">
+              <div class="rb-trust__item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>Secure Checkout</span>
+              </div>
+              <div class="rb-trust__item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="1" y="3" width="15" height="13" rx="2" ry="2"/>
+                  <path d="M16 8h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-2"/>
+                </svg>
+                <span>Free Shipping</span>
+              </div>
+              <div class="rb-trust__item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>30-Day Returns</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== STICKY PREVIEW SIDEBAR ====== -->
+        <aside class="rb-sidebar" id="RbSidebar" aria-label="Ring Preview">
+          <div class="rb-sidebar__inner">
+            <h3 class="rb-sidebar__title">Your Ring</h3>
+
+            <!-- Preview Images -->
+            <div class="rb-preview">
+              <div class="rb-preview__ring" id="PreviewRing">
+                <div class="rb-preview__placeholder">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="6"/>
+                  </svg>
+                  <span>Select a setting</span>
+                </div>
+              </div>
+              <div class="rb-preview__diamond" id="PreviewDiamond">
+                <div class="rb-preview__placeholder">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <polygon points="12,2 22,9 17,22 7,22 2,9"/>
+                  </svg>
+                  <span>Select a diamond</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Selection Details -->
+            <div class="rb-selection">
+              <div class="rb-selection__item" id="SidebarRing">
+                <span class="rb-selection__label">Setting</span>
+                <span class="rb-selection__value" id="SidebarRingName">Not selected</span>
+                <span class="rb-selection__price" id="SidebarRingPrice"></span>
+              </div>
+              <div class="rb-selection__item" id="SidebarDiamond">
+                <span class="rb-selection__label">Diamond</span>
+                <span class="rb-selection__value" id="SidebarDiamondName">Not selected</span>
+                <span class="rb-selection__price" id="SidebarDiamondPrice"></span>
+              </div>
+            </div>
+
+            <!-- Total Price -->
+            <div class="rb-sidebar__total">
+              <span class="rb-sidebar__total-label">Estimated Total</span>
+              <span class="rb-sidebar__total-price" id="SidebarTotalPrice">$0.00</span>
+            </div>
+
+            <!-- CTA Button -->
+            <button class="rb-btn rb-btn--primary rb-btn--full" id="SidebarCTA" type="button" disabled>Continue</button>
+
+            <!-- Help Link -->
+            <a href="/pages/contact" class="rb-sidebar__help">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              Need help? Contact our experts
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== MOBILE STICKY BAR ====== -->
+  <div class="rb-mobile-bar" id="RbMobileBar">
+    <div class="rb-mobile-bar__info">
+      <span class="rb-mobile-bar__label">Total:</span>
+      <span class="rb-mobile-bar__price" id="MobileBarPrice">$0.00</span>
+    </div>
+    <button class="rb-btn rb-btn--primary" id="MobileBarCTA" type="button" disabled>Continue</button>
+  </div>
+
+  <!-- ====== LOADING OVERLAY ====== -->
+  <div class="rb-loading" id="RbLoading" aria-hidden="true">
+    <div class="rb-loading__spinner"></div>
+    <p class="rb-loading__text">Adding to cart...</p>
+  </div>
+</section>
+
+<script src="{{ 'ring-builder.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Ring Builder",
+  "tag": "section",
+  "class": "section-ring-builder",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Design Your Dream Ring"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Create a one-of-a-kind masterpiece that tells your unique story"
+    },
+    {
+      "type": "header",
+      "content": "Collections"
+    },
+    {
+      "type": "collection",
+      "id": "ring_collection",
+      "label": "Ring Settings Collection"
+    },
+    {
+      "type": "collection",
+      "id": "diamond_collection",
+      "label": "Diamonds Collection"
+    },
+    {
+      "type": "header",
+      "content": "Step Labels"
+    },
+    {
+      "type": "text",
+      "id": "step1_title",
+      "label": "Step 1 Title",
+      "default": "Select Your Setting"
+    },
+    {
+      "type": "text",
+      "id": "step1_description",
+      "label": "Step 1 Description",
+      "default": "Choose the perfect foundation for your ring"
+    },
+    {
+      "type": "text",
+      "id": "step2_title",
+      "label": "Step 2 Title",
+      "default": "Choose Your Diamond"
+    },
+    {
+      "type": "text",
+      "id": "step2_description",
+      "label": "Step 2 Description",
+      "default": "Select a brilliant diamond to complete your design"
+    },
+    {
+      "type": "text",
+      "id": "step3_title",
+      "label": "Step 3 Title",
+      "default": "Review & Complete"
+    },
+    {
+      "type": "text",
+      "id": "step3_description",
+      "label": "Step 3 Description",
+      "default": "Preview your creation and add to cart"
+    },
+    {
+      "type": "header",
+      "content": "Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_3d_preview",
+      "label": "Enable 3D Preview Placeholder",
+      "default": false,
+      "info": "Shows placeholder for future 3D viewer integration"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_diamond_specs",
+      "label": "Show Diamond Specifications",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_ring_specs",
+      "label": "Show Ring Specifications",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "background-1"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#c9a050"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ring Builder"
+    }
+  ]
+}
+{% endschema %}

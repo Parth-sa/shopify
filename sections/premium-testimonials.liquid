@@ -1,0 +1,303 @@
+{% comment %}
+  PREMIUM TESTIMONIALS - Luxury Style
+  ===================================
+  Elegant customer testimonials with premium styling
+{% endcomment %}
+
+{{ 'premium-testimonials.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #Testimonials-{{ section.id }} {
+    --testimonial-bg: {{ section.settings.background_color }};
+    --testimonial-text: {{ section.settings.text_color }};
+    --testimonial-accent: {{ section.settings.accent_color }};
+  }
+{% endstyle %}
+
+<section 
+  id="Testimonials-{{ section.id }}"
+  class="luxury-section premium-testimonials"
+  style="background-color: var(--testimonial-bg);"
+>
+  <div class="luxury-container">
+    <!-- Section Header -->
+    {%- if section.settings.heading != blank or section.settings.subtitle != blank -%}
+      <div class="premium-testimonials__header luxury-reveal">
+        {%- if section.settings.subtitle != blank -%}
+          <p class="premium-testimonials__subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+        
+        {%- if section.settings.heading != blank -%}
+          <h2 class="premium-testimonials__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        
+        <div class="luxury-divider"></div>
+      </div>
+    {%- endif -%}
+
+    <!-- Testimonials Grid/Slider -->
+    <div class="premium-testimonials__grid luxury-stagger" data-testimonials-grid>
+      {%- for block in section.blocks -%}
+        <article class="premium-testimonial" {{ block.shopify_attributes }}>
+          <div class="premium-testimonial__inner">
+            <!-- Stars -->
+            {%- if section.settings.show_stars -%}
+              <div class="premium-testimonial__stars" aria-label="{{ block.settings.rating }} out of 5 stars">
+                {%- for i in (1..5) -%}
+                  <svg viewBox="0 0 24 24" fill="{% if i <= block.settings.rating %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="1">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                  </svg>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+
+            <!-- Quote -->
+            <blockquote class="premium-testimonial__quote">
+              <p>{{ block.settings.testimonial }}</p>
+            </blockquote>
+
+            <!-- Product Info (Optional) -->
+            {%- if block.settings.product != blank -%}
+              {%- assign testimonial_product = block.settings.product -%}
+              <a href="{{ testimonial_product.url }}" class="premium-testimonial__product">
+                {%- if testimonial_product.featured_image != blank -%}
+                  <img 
+                    src="{{ testimonial_product.featured_image | image_url: width: 80 }}"
+                    alt="{{ testimonial_product.title }}"
+                    width="40"
+                    height="40"
+                    loading="lazy"
+                  >
+                {%- endif -%}
+                <span class="premium-testimonial__product-title">{{ testimonial_product.title }}</span>
+              </a>
+            {%- endif -%}
+
+            <!-- Author -->
+            <footer class="premium-testimonial__footer">
+              {%- if block.settings.author_image != blank -%}
+                <img 
+                  src="{{ block.settings.author_image | image_url: width: 100 }}"
+                  alt="{{ block.settings.author }}"
+                  class="premium-testimonial__avatar"
+                  width="50"
+                  height="50"
+                  loading="lazy"
+                >
+              {%- endif -%}
+              <div class="premium-testimonial__author">
+                <cite class="premium-testimonial__name">{{ block.settings.author }}</cite>
+                {%- if block.settings.verified -%}
+                  <span class="premium-testimonial__verified">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Verified Purchase
+                  </span>
+                {%- endif -%}
+                {%- if block.settings.location != blank -%}
+                  <span class="premium-testimonial__location">{{ block.settings.location }}</span>
+                {%- endif -%}
+              </div>
+            </footer>
+          </div>
+        </article>
+      {%- endfor -%}
+    </div>
+
+    <!-- Trust Badges -->
+    {%- if section.settings.show_trust_badges -%}
+      <div class="premium-testimonials__trust luxury-reveal">
+        <div class="premium-testimonials__trust-badges">
+          <div class="premium-testimonials__trust-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
+            </svg>
+            <span>Secure Checkout</span>
+          </div>
+          <div class="premium-testimonials__trust-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span>Free Shipping</span>
+          </div>
+          <div class="premium-testimonials__trust-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M16 8l-4 4-4-4"/>
+              <path d="M12 12v6"/>
+            </svg>
+            <span>30-Day Returns</span>
+          </div>
+          <div class="premium-testimonials__trust-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+            <span>Lifetime Warranty</span>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const section = document.querySelector('#Testimonials-{{ section.id }}');
+    if (!section) return;
+    
+    const reveals = section.querySelectorAll('.luxury-reveal, .luxury-stagger');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+    
+    reveals.forEach(el => observer.observe(el));
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Premium Testimonials",
+  "tag": "section",
+  "class": "premium-testimonials-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Customer Love"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Stories of Forever"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stars",
+      "label": "Show star ratings",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trust_badges",
+      "label": "Show trust badges",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#faf9f7"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#c9a962"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5,
+          "label": "Star rating"
+        },
+        {
+          "type": "textarea",
+          "id": "testimonial",
+          "label": "Testimonial text",
+          "default": "The ring exceeded all my expectations. The craftsmanship is exquisite and she said yes immediately. Thank you for making this moment so special."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author name",
+          "default": "Michael R."
+        },
+        {
+          "type": "image_picker",
+          "id": "author_image",
+          "label": "Author photo"
+        },
+        {
+          "type": "text",
+          "id": "location",
+          "label": "Location",
+          "default": "New York, NY"
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Verified purchase",
+          "default": true
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Link to product (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Premium Testimonials",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "testimonial": "The ring exceeded all my expectations. The craftsmanship is exquisite and she said yes immediately. Thank you for making this moment so special.",
+            "author": "Michael R.",
+            "location": "New York, NY"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "testimonial": "I spent months looking for the perfect engagement ring and this was worth the wait. The diamond sparkles beautifully and the setting is stunning.",
+            "author": "Sarah K.",
+            "location": "Los Angeles, CA"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "testimonial": "Exceptional quality and customer service. They helped me design a custom piece that perfectly captured our love story. Forever grateful.",
+            "author": "James W.",
+            "location": "Chicago, IL"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,435 @@
+{% comment %}
+  LUXURY PRODUCT GALLERY
+  ======================
+  Premium product media gallery with zoom, thumbnails, and 3D model support
+{% endcomment %}
+
+{{ 'luxury-product-gallery.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #ProductGallery-{{ section.id }} {
+    --gallery-bg: {{ section.settings.background_color }};
+    --gallery-accent: {{ section.settings.accent_color }};
+    --thumbnail-size: {{ section.settings.thumbnail_size }}px;
+  }
+{% endstyle %}
+
+<div 
+  id="ProductGallery-{{ section.id }}"
+  class="luxury-product-gallery"
+  data-section-id="{{ section.id }}"
+>
+  <div class="luxury-product-gallery__container">
+    <!-- Thumbnails -->
+    {%- if section.settings.enable_thumbnails -%}
+      <div class="luxury-product-gallery__thumbnails" role="tablist">
+        {%- for media in product.media -%}
+          <button
+            type="button"
+            class="luxury-product-gallery__thumbnail{% if forloop.first %} is-active{% endif %}"
+            data-media-id="{{ media.id }}"
+            data-index="{{ forloop.index0 }}"
+            role="tab"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-controls="MediaViewer-{{ media.id }}"
+          >
+            {%- if media.media_type == 'video' or media.media_type == 'external_video' -%}
+              <div class="luxury-product-gallery__thumbnail-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21"/>
+                </svg>
+              </div>
+            {%- elsif media.media_type == 'model' -%}
+              <div class="luxury-product-gallery__thumbnail-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+            {%- endif -%}
+            <img
+              src="{{ media.preview_image | image_url: width: 150 }}"
+              alt="{{ media.alt | escape }}"
+              width="{{ section.settings.thumbnail_size }}"
+              height="{{ section.settings.thumbnail_size }}"
+              loading="lazy"
+            >
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <!-- Main Viewer -->
+    <div class="luxury-product-gallery__main">
+      <!-- Navigation Arrows -->
+      {%- if product.media.size > 1 -%}
+        <button type="button" class="luxury-product-gallery__nav luxury-product-gallery__nav--prev" aria-label="Previous image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <button type="button" class="luxury-product-gallery__nav luxury-product-gallery__nav--next" aria-label="Next image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      {%- endif -%}
+
+      <!-- Counter -->
+      <div class="luxury-product-gallery__counter">
+        <span class="luxury-product-gallery__current">1</span>
+        <span class="luxury-product-gallery__separator">/</span>
+        <span class="luxury-product-gallery__total">{{ product.media.size }}</span>
+      </div>
+
+      <!-- Media Viewer -->
+      <div class="luxury-product-gallery__viewer">
+        {%- for media in product.media -%}
+          <div
+            id="MediaViewer-{{ media.id }}"
+            class="luxury-product-gallery__slide{% if forloop.first %} is-active{% endif %}"
+            data-media-id="{{ media.id }}"
+            data-media-type="{{ media.media_type }}"
+            data-index="{{ forloop.index0 }}"
+            role="tabpanel"
+            {% unless forloop.first %}hidden{% endunless %}
+          >
+            {%- case media.media_type -%}
+              {%- when 'image' -%}
+                <div 
+                  class="luxury-product-gallery__image-wrapper{% if section.settings.enable_zoom %} has-zoom{% endif %}"
+                  data-zoom-image="{{ media | image_url: width: 2048 }}"
+                >
+                  <img
+                    src="{{ media | image_url: width: 1200 }}"
+                    srcset="{{ media | image_url: width: 600 }} 600w,
+                            {{ media | image_url: width: 900 }} 900w,
+                            {{ media | image_url: width: 1200 }} 1200w,
+                            {{ media | image_url: width: 1800 }} 1800w"
+                    sizes="(min-width: 1200px) 50vw, 100vw"
+                    alt="{{ media.alt | escape }}"
+                    width="{{ media.width }}"
+                    height="{{ media.height }}"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                    class="luxury-product-gallery__image"
+                  >
+                  {%- if section.settings.enable_zoom -%}
+                    <div class="luxury-product-gallery__zoom-lens"></div>
+                  {%- endif -%}
+                </div>
+
+                {%- if section.settings.enable_lightbox -%}
+                  <button type="button" class="luxury-product-gallery__expand" aria-label="Expand image">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <polyline points="15 3 21 3 21 9"/>
+                      <polyline points="9 21 3 21 3 15"/>
+                      <line x1="21" y1="3" x2="14" y2="10"/>
+                      <line x1="3" y1="21" x2="10" y2="14"/>
+                    </svg>
+                  </button>
+                {%- endif -%}
+
+              {%- when 'video' -%}
+                <div class="luxury-product-gallery__video">
+                  {{ media | video_tag: autoplay: false, loop: true, muted: false, controls: true }}
+                </div>
+
+              {%- when 'external_video' -%}
+                <div class="luxury-product-gallery__video">
+                  {%- if media.host == 'youtube' -%}
+                    {{ media | external_video_url: autoplay: false, loop: false | external_video_tag }}
+                  {%- elsif media.host == 'vimeo' -%}
+                    {{ media | external_video_url: autoplay: false, loop: false | external_video_tag }}
+                  {%- endif -%}
+                </div>
+
+              {%- when 'model' -%}
+                <div class="luxury-product-gallery__model">
+                  {{ media | model_viewer_tag: reveal: 'interaction', toggleable: true }}
+                </div>
+            {%- endcase -%}
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <!-- Dots Navigation (Mobile) -->
+      {%- if product.media.size > 1 -%}
+        <div class="luxury-product-gallery__dots">
+          {%- for media in product.media -%}
+            <button
+              type="button"
+              class="luxury-product-gallery__dot{% if forloop.first %} is-active{% endif %}"
+              data-index="{{ forloop.index0 }}"
+              aria-label="View image {{ forloop.index }}"
+            ></button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  {%- if section.settings.enable_lightbox -%}
+    <div class="luxury-product-gallery__lightbox" id="Lightbox-{{ section.id }}" hidden>
+      <div class="luxury-product-gallery__lightbox-backdrop"></div>
+      <button type="button" class="luxury-product-gallery__lightbox-close" aria-label="Close lightbox">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+      <div class="luxury-product-gallery__lightbox-content">
+        <img src="" alt="" class="luxury-product-gallery__lightbox-image">
+      </div>
+      
+      {%- if product.media.size > 1 -%}
+        <button type="button" class="luxury-product-gallery__lightbox-nav luxury-product-gallery__lightbox-nav--prev" aria-label="Previous">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <button type="button" class="luxury-product-gallery__lightbox-nav luxury-product-gallery__lightbox-nav--next" aria-label="Next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const gallery = document.getElementById('ProductGallery-{{ section.id }}');
+    if (!gallery) return;
+
+    const slides = gallery.querySelectorAll('.luxury-product-gallery__slide');
+    const thumbnails = gallery.querySelectorAll('.luxury-product-gallery__thumbnail');
+    const dots = gallery.querySelectorAll('.luxury-product-gallery__dot');
+    const prevBtn = gallery.querySelector('.luxury-product-gallery__nav--prev');
+    const nextBtn = gallery.querySelector('.luxury-product-gallery__nav--next');
+    const counter = gallery.querySelector('.luxury-product-gallery__current');
+    
+    let currentIndex = 0;
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('is-active', i === index);
+        slide.hidden = i !== index;
+      });
+      thumbnails.forEach((thumb, i) => {
+        thumb.classList.toggle('is-active', i === index);
+        thumb.setAttribute('aria-selected', i === index);
+      });
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('is-active', i === index);
+      });
+      if (counter) counter.textContent = index + 1;
+      currentIndex = index;
+    }
+
+    // Thumbnail clicks
+    thumbnails.forEach((thumb, index) => {
+      thumb.addEventListener('click', () => showSlide(index));
+    });
+
+    // Dot clicks
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => showSlide(index));
+    });
+
+    // Arrow navigation
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        const newIndex = currentIndex === 0 ? slides.length - 1 : currentIndex - 1;
+        showSlide(newIndex);
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        const newIndex = currentIndex === slides.length - 1 ? 0 : currentIndex + 1;
+        showSlide(newIndex);
+      });
+    }
+
+    // Keyboard navigation
+    gallery.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        const newIndex = currentIndex === 0 ? slides.length - 1 : currentIndex - 1;
+        showSlide(newIndex);
+      } else if (e.key === 'ArrowRight') {
+        const newIndex = currentIndex === slides.length - 1 ? 0 : currentIndex + 1;
+        showSlide(newIndex);
+      }
+    });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const viewer = gallery.querySelector('.luxury-product-gallery__viewer');
+    
+    viewer.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    viewer.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) {
+          // Swipe left - next
+          const newIndex = currentIndex === slides.length - 1 ? 0 : currentIndex + 1;
+          showSlide(newIndex);
+        } else {
+          // Swipe right - prev
+          const newIndex = currentIndex === 0 ? slides.length - 1 : currentIndex - 1;
+          showSlide(newIndex);
+        }
+      }
+    }, { passive: true });
+
+    // Zoom functionality
+    {%- if section.settings.enable_zoom -%}
+    const zoomWrappers = gallery.querySelectorAll('.luxury-product-gallery__image-wrapper.has-zoom');
+    zoomWrappers.forEach((wrapper) => {
+      const img = wrapper.querySelector('img');
+      const lens = wrapper.querySelector('.luxury-product-gallery__zoom-lens');
+      
+      wrapper.addEventListener('mousemove', (e) => {
+        const rect = wrapper.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        img.style.transformOrigin = `${x}% ${y}%`;
+        img.style.transform = 'scale(2)';
+      });
+
+      wrapper.addEventListener('mouseleave', () => {
+        img.style.transform = 'scale(1)';
+      });
+    });
+    {%- endif -%}
+
+    // Lightbox functionality
+    {%- if section.settings.enable_lightbox -%}
+    const lightbox = document.getElementById('Lightbox-{{ section.id }}');
+    const lightboxImage = lightbox.querySelector('.luxury-product-gallery__lightbox-image');
+    const lightboxClose = lightbox.querySelector('.luxury-product-gallery__lightbox-close');
+    const lightboxBackdrop = lightbox.querySelector('.luxury-product-gallery__lightbox-backdrop');
+    const expandBtns = gallery.querySelectorAll('.luxury-product-gallery__expand');
+    const lightboxPrev = lightbox.querySelector('.luxury-product-gallery__lightbox-nav--prev');
+    const lightboxNext = lightbox.querySelector('.luxury-product-gallery__lightbox-nav--next');
+
+    expandBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const slide = btn.closest('.luxury-product-gallery__slide');
+        const img = slide.querySelector('img');
+        const zoomSrc = slide.querySelector('[data-zoom-image]')?.dataset.zoomImage || img.src;
+        lightboxImage.src = zoomSrc;
+        lightboxImage.alt = img.alt;
+        lightbox.hidden = false;
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    function closeLightbox() {
+      lightbox.hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxBackdrop.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !lightbox.hidden) closeLightbox();
+    });
+
+    if (lightboxPrev) {
+      lightboxPrev.addEventListener('click', () => {
+        const newIndex = currentIndex === 0 ? slides.length - 1 : currentIndex - 1;
+        showSlide(newIndex);
+        const slide = slides[newIndex];
+        if (slide.dataset.mediaType === 'image') {
+          const zoomSrc = slide.querySelector('[data-zoom-image]')?.dataset.zoomImage;
+          if (zoomSrc) lightboxImage.src = zoomSrc;
+        }
+      });
+    }
+    if (lightboxNext) {
+      lightboxNext.addEventListener('click', () => {
+        const newIndex = currentIndex === slides.length - 1 ? 0 : currentIndex + 1;
+        showSlide(newIndex);
+        const slide = slides[newIndex];
+        if (slide.dataset.mediaType === 'image') {
+          const zoomSrc = slide.querySelector('[data-zoom-image]')?.dataset.zoomImage;
+          if (zoomSrc) lightboxImage.src = zoomSrc;
+        }
+      });
+    }
+    {%- endif -%}
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Luxury Product Gallery",
+  "tag": "section",
+  "class": "luxury-product-gallery-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_thumbnails",
+      "label": "Show thumbnails",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_size",
+      "min": 60,
+      "max": 120,
+      "step": 10,
+      "default": 80,
+      "unit": "px",
+      "label": "Thumbnail size"
+    },
+    {
+      "type": "header",
+      "content": "Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_zoom",
+      "label": "Enable hover zoom",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_lightbox",
+      "label": "Enable fullscreen lightbox",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#faf9f7"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#c9a962"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Luxury Product Gallery"
+    }
+  ]
+}
+{% endschema %}

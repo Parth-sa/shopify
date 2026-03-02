@@ -1,0 +1,422 @@
+{% comment %}
+  BRAND STORY SECTION - Editorial Style
+  =====================================
+  Full-width editorial layout with large typography
+  Cinematic scrolling experience
+{% endcomment %}
+
+{{ 'brand-story.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #BrandStory-{{ section.id }} {
+    --story-bg: {{ section.settings.background_color }};
+    --story-text: {{ section.settings.text_color }};
+    --story-accent: {{ section.settings.accent_color }};
+  }
+{% endstyle %}
+
+<section 
+  id="BrandStory-{{ section.id }}"
+  class="luxury-section brand-story{% if section.settings.full_width %} brand-story--full{% endif %}"
+  style="background-color: var(--story-bg); color: var(--story-text);"
+>
+  <div class="brand-story__container{% unless section.settings.full_width %} luxury-container{% endunless %}">
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'text_block' -%}
+          <div class="brand-story__block brand-story__text-block luxury-reveal" {{ block.shopify_attributes }}>
+            <div class="brand-story__text-inner">
+              {%- if block.settings.subtitle != blank -%}
+                <p class="brand-story__subtitle">{{ block.settings.subtitle }}</p>
+              {%- endif -%}
+              
+              {%- if block.settings.heading != blank -%}
+                <h2 class="brand-story__heading {{ block.settings.heading_size }}">
+                  {{ block.settings.heading }}
+                </h2>
+              {%- endif -%}
+              
+              {%- if block.settings.text != blank -%}
+                <div class="brand-story__text">{{ block.settings.text }}</div>
+              {%- endif -%}
+              
+              {%- if block.settings.button_label != blank -%}
+                <a href="{{ block.settings.button_link }}" class="luxury-btn luxury-btn--{{ block.settings.button_style }}">
+                  {{ block.settings.button_label }}
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+
+        {%- when 'image_block' -%}
+          <div class="brand-story__block brand-story__image-block{% if block.settings.full_bleed %} brand-story__image-block--full{% endif %} luxury-reveal" {{ block.shopify_attributes }}>
+            {%- if block.settings.image != blank -%}
+              <div class="brand-story__image-wrapper" style="--aspect-ratio: {{ block.settings.aspect_ratio }}">
+                <img 
+                  src="{{ block.settings.image | image_url: width: 1600 }}"
+                  srcset="{{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1200 }} 1200w, {{ block.settings.image | image_url: width: 1600 }} 1600w"
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  alt="{{ block.settings.image.alt | escape | default: 'Brand story image' }}"
+                  loading="lazy"
+                  class="brand-story__image"
+                >
+              </div>
+              {%- if block.settings.caption != blank -%}
+                <p class="brand-story__caption">{{ block.settings.caption }}</p>
+              {%- endif -%}
+            {%- else -%}
+              <div class="brand-story__image-wrapper brand-story__placeholder">
+                {{ 'lifestyle-2' | placeholder_svg_tag }}
+              </div>
+            {%- endif -%}
+          </div>
+
+        {%- when 'quote_block' -%}
+          <div class="brand-story__block brand-story__quote-block luxury-reveal" {{ block.shopify_attributes }}>
+            <div class="brand-story__quote-inner">
+              <svg class="brand-story__quote-mark" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3,21V17A4,4 0 0,1 7,13H9V17A2,2 0 0,1 7,19H5V21H3M15,21V17A4,4 0 0,1 19,13H21V17A2,2 0 0,1 19,19H17V21H15Z"/>
+              </svg>
+              <blockquote class="brand-story__quote">
+                {{ block.settings.quote }}
+              </blockquote>
+              {%- if block.settings.author != blank -%}
+                <cite class="brand-story__author">
+                  {%- if block.settings.author_title != blank -%}
+                    <span class="brand-story__author-title">{{ block.settings.author_title }}</span>
+                  {%- endif -%}
+                  <span class="brand-story__author-name">{{ block.settings.author }}</span>
+                </cite>
+              {%- endif -%}
+            </div>
+          </div>
+
+        {%- when 'split_block' -%}
+          <div class="brand-story__block brand-story__split-block{% if block.settings.reverse %} brand-story__split-block--reverse{% endif %}" {{ block.shopify_attributes }}>
+            <div class="brand-story__split-media luxury-reveal">
+              {%- if block.settings.image != blank -%}
+                <img 
+                  src="{{ block.settings.image | image_url: width: 1000 }}"
+                  alt="{{ block.settings.image.alt | escape | default: 'Brand story' }}"
+                  loading="lazy"
+                  class="brand-story__split-image"
+                >
+              {%- else -%}
+                <div class="brand-story__placeholder">
+                  {{ 'product-2' | placeholder_svg_tag }}
+                </div>
+              {%- endif -%}
+            </div>
+            <div class="brand-story__split-content luxury-reveal">
+              {%- if block.settings.subtitle != blank -%}
+                <p class="brand-story__subtitle">{{ block.settings.subtitle }}</p>
+              {%- endif -%}
+              
+              {%- if block.settings.heading != blank -%}
+                <h3 class="brand-story__split-heading">{{ block.settings.heading }}</h3>
+              {%- endif -%}
+              
+              <div class="luxury-divider luxury-divider--left"></div>
+              
+              {%- if block.settings.text != blank -%}
+                <div class="brand-story__split-text">{{ block.settings.text }}</div>
+              {%- endif -%}
+              
+              {%- if block.settings.button_label != blank -%}
+                <a href="{{ block.settings.button_link }}" class="luxury-link luxury-link--arrow">
+                  {{ block.settings.button_label }}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+
+        {%- when 'divider' -%}
+          <div class="brand-story__block brand-story__divider {{ block.settings.style }}" {{ block.shopify_attributes }}>
+            {%- if block.settings.style == 'diamond' -%}
+              <div class="luxury-divider--diamond">
+                <span class="luxury-divider--diamond-icon"></span>
+              </div>
+            {%- else -%}
+              <div class="luxury-divider luxury-divider--{{ block.settings.width }}"></div>
+            {%- endif -%}
+          </div>
+
+      {%- endcase -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const section = document.querySelector('#BrandStory-{{ section.id }}');
+    if (!section) return;
+    
+    const reveals = section.querySelectorAll('.luxury-reveal');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.15,
+      rootMargin: '0px 0px -80px 0px'
+    });
+    
+    reveals.forEach(el => observer.observe(el));
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Brand Story",
+  "tag": "section",
+  "class": "brand-story-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full width layout",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#c9a962"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text_block",
+      "name": "Text Block",
+      "settings": [
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Our Story"
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "Heading",
+          "default": "A Legacy of Craftsmanship"
+        },
+        {
+          "type": "select",
+          "id": "heading_size",
+          "label": "Heading size",
+          "options": [
+            { "value": "h2", "label": "Large" },
+            { "value": "h3", "label": "Medium" },
+            { "value": "h4", "label": "Small" }
+          ],
+          "default": "h2"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>For generations, we have crafted exquisite jewelry pieces that celebrate life's most precious moments. Each piece tells a story of love, commitment, and timeless elegance.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Button style",
+          "options": [
+            { "value": "primary", "label": "Primary" },
+            { "value": "secondary", "label": "Secondary" },
+            { "value": "gold", "label": "Gold" }
+          ],
+          "default": "secondary"
+        }
+      ]
+    },
+    {
+      "type": "image_block",
+      "name": "Image Block",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "select",
+          "id": "aspect_ratio",
+          "label": "Aspect ratio",
+          "options": [
+            { "value": "1/1", "label": "Square (1:1)" },
+            { "value": "4/3", "label": "Landscape (4:3)" },
+            { "value": "16/9", "label": "Wide (16:9)" },
+            { "value": "3/4", "label": "Portrait (3:4)" },
+            { "value": "2/3", "label": "Tall Portrait (2:3)" }
+          ],
+          "default": "4/3"
+        },
+        {
+          "type": "checkbox",
+          "id": "full_bleed",
+          "label": "Full width image",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
+        }
+      ]
+    },
+    {
+      "type": "quote_block",
+      "name": "Quote Block",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Every diamond we select, every setting we craft, reflects our unwavering commitment to excellence and the moments that matter most."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author name",
+          "default": "Elizabeth Chen"
+        },
+        {
+          "type": "text",
+          "id": "author_title",
+          "label": "Author title",
+          "default": "Founder & Creative Director"
+        }
+      ]
+    },
+    {
+      "type": "split_block",
+      "name": "Split Image + Text",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "checkbox",
+          "id": "reverse",
+          "label": "Reverse layout (image right)",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Handcrafted Excellence"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Our master jewelers bring decades of expertise to every piece, ensuring that each creation meets the highest standards of quality and beauty.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Link label"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Link URL"
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "name": "Divider",
+      "settings": [
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            { "value": "line", "label": "Line" },
+            { "value": "diamond", "label": "Diamond" }
+          ],
+          "default": "diamond"
+        },
+        {
+          "type": "select",
+          "id": "width",
+          "label": "Width (for line style)",
+          "options": [
+            { "value": "short", "label": "Short (60px)" },
+            { "value": "long", "label": "Long (120px)" }
+          ],
+          "default": "short"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand Story",
+      "blocks": [
+        {
+          "type": "text_block",
+          "settings": {
+            "subtitle": "Our Story",
+            "heading": "A Legacy of Craftsmanship"
+          }
+        },
+        {
+          "type": "divider",
+          "settings": {
+            "style": "diamond"
+          }
+        },
+        {
+          "type": "split_block",
+          "settings": {
+            "heading": "Handcrafted Excellence"
+          }
+        },
+        {
+          "type": "quote_block",
+          "settings": {}
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

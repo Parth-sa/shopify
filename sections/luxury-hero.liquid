@@ -1,0 +1,378 @@
+{% comment %}
+  LUXURY HERO SECTION - Keyzar/Cartier Style
+  ===========================================
+  Full-screen cinematic hero with video/image support
+  Premium typography and smooth fade-in animations
+{% endcomment %}
+
+{{ 'luxury-hero.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #LuxuryHero-{{ section.id }} {
+    --hero-height: {{ section.settings.hero_height }}vh;
+    --hero-overlay: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    --hero-text-color: {{ section.settings.text_color }};
+    --hero-accent: {{ section.settings.accent_color }};
+  }
+{% endstyle %}
+
+<section 
+  id="LuxuryHero-{{ section.id }}"
+  class="luxury-hero{% if section.settings.full_height %} luxury-hero--full{% endif %}"
+  data-section-id="{{ section.id }}"
+>
+  <!-- Background Media -->
+  <div class="luxury-hero__media">
+    {%- if section.settings.video != blank -%}
+      <video 
+        class="luxury-hero__video"
+        autoplay 
+        muted 
+        loop 
+        playsinline
+        poster="{{ section.settings.image | image_url: width: 1920 }}"
+      >
+        <source src="{{ section.settings.video }}" type="video/mp4">
+      </video>
+    {%- elsif section.settings.video_url != blank -%}
+      {%- if section.settings.video_url contains 'youtube' or section.settings.video_url contains 'youtu.be' -%}
+        {%- assign video_id = section.settings.video_url | split: 'v=' | last | split: '&' | first -%}
+        {%- if section.settings.video_url contains 'youtu.be' -%}
+          {%- assign video_id = section.settings.video_url | split: '/' | last | split: '?' | first -%}
+        {%- endif -%}
+        <div class="luxury-hero__video-embed">
+          <iframe 
+            src="https://www.youtube.com/embed/{{ video_id }}?autoplay=1&mute=1&loop=1&playlist={{ video_id }}&controls=0&showinfo=0&rel=0&modestbranding=1"
+            frameborder="0"
+            allow="autoplay; fullscreen"
+            title="Hero Video"
+          ></iframe>
+        </div>
+      {%- elsif section.settings.video_url contains 'vimeo' -%}
+        {%- assign video_id = section.settings.video_url | split: '/' | last -%}
+        <div class="luxury-hero__video-embed">
+          <iframe 
+            src="https://player.vimeo.com/video/{{ video_id }}?autoplay=1&muted=1&loop=1&background=1"
+            frameborder="0"
+            allow="autoplay; fullscreen"
+            title="Hero Video"
+          ></iframe>
+        </div>
+      {%- endif -%}
+    {%- elsif section.settings.image != blank -%}
+      <picture>
+        {%- if section.settings.image_mobile != blank -%}
+          <source 
+            media="(max-width: 767px)" 
+            srcset="{{ section.settings.image_mobile | image_url: width: 828 }} 1x, {{ section.settings.image_mobile | image_url: width: 1656 }} 2x"
+          >
+        {%- endif -%}
+        <img 
+          src="{{ section.settings.image | image_url: width: 1920 }}"
+          srcset="{{ section.settings.image | image_url: width: 1440 }} 1440w, {{ section.settings.image | image_url: width: 1920 }} 1920w, {{ section.settings.image | image_url: width: 2560 }} 2560w"
+          sizes="100vw"
+          alt="{{ section.settings.image.alt | default: section.settings.heading }}"
+          class="luxury-hero__image"
+          loading="eager"
+          fetchpriority="high"
+        >
+      </picture>
+    {%- else -%}
+      <div class="luxury-hero__placeholder">
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'luxury-hero__placeholder-svg' }}
+      </div>
+    {%- endif -%}
+
+    <!-- Overlay -->
+    <div class="luxury-hero__overlay"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="luxury-hero__content">
+    <div class="luxury-container">
+      <div class="luxury-hero__inner luxury-hero__inner--{{ section.settings.content_position }}">
+        <div class="luxury-hero__text">
+          {%- if section.settings.subtitle != blank -%}
+            <p class="luxury-hero__subtitle luxury-reveal" data-delay="0">
+              {{ section.settings.subtitle }}
+            </p>
+          {%- endif -%}
+
+          {%- if section.settings.heading != blank -%}
+            <h1 class="luxury-hero__heading luxury-reveal" data-delay="100">
+              {{ section.settings.heading }}
+            </h1>
+          {%- endif -%}
+
+          {%- if section.settings.description != blank -%}
+            <p class="luxury-hero__description luxury-reveal" data-delay="200">
+              {{ section.settings.description }}
+            </p>
+          {%- endif -%}
+
+          <div class="luxury-hero__buttons luxury-reveal" data-delay="300">
+            {%- if section.settings.button_1_label != blank -%}
+              <a 
+                href="{{ section.settings.button_1_link }}" 
+                class="luxury-btn luxury-btn--{{ section.settings.button_1_style }}"
+              >
+                {{ section.settings.button_1_label }}
+              </a>
+            {%- endif -%}
+
+            {%- if section.settings.button_2_label != blank -%}
+              <a 
+                href="{{ section.settings.button_2_link }}" 
+                class="luxury-btn luxury-btn--{{ section.settings.button_2_style }}"
+              >
+                {{ section.settings.button_2_label }}
+              </a>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Indicator -->
+  {%- if section.settings.show_scroll_indicator -%}
+    <div class="luxury-hero__scroll">
+      <span class="luxury-hero__scroll-text">Scroll</span>
+      <span class="luxury-hero__scroll-line"></span>
+    </div>
+  {%- endif -%}
+
+  <!-- Optional: Diamond Accent -->
+  {%- if section.settings.show_diamond_accent -%}
+    <div class="luxury-hero__accent">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5">
+        <path d="M12 2L2 9l10 13 10-13-10-7z"/>
+      </svg>
+    </div>
+  {%- endif -%}
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const hero = document.querySelector('#LuxuryHero-{{ section.id }}');
+    if (!hero) return;
+    
+    // Reveal animations
+    const reveals = hero.querySelectorAll('.luxury-reveal');
+    reveals.forEach((el, index) => {
+      const delay = parseInt(el.dataset.delay) || index * 100;
+      setTimeout(() => {
+        el.classList.add('is-visible');
+      }, 200 + delay);
+    });
+    
+    // Parallax effect on scroll (subtle)
+    const media = hero.querySelector('.luxury-hero__media');
+    if (media && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+      window.addEventListener('scroll', () => {
+        const scroll = window.scrollY;
+        const heroHeight = hero.offsetHeight;
+        if (scroll < heroHeight) {
+          const translate = scroll * 0.3;
+          media.style.transform = `translateY(${translate}px)`;
+        }
+      }, { passive: true });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Luxury Hero",
+  "tag": "section",
+  "class": "luxury-hero-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile background image",
+      "info": "Optional - shows different image on mobile"
+    },
+    {
+      "type": "url",
+      "id": "video",
+      "label": "Self-hosted video URL",
+      "info": "Direct link to MP4 file"
+    },
+    {
+      "type": "url",
+      "id": "video_url",
+      "label": "YouTube or Vimeo URL",
+      "info": "Alternative: External video embed"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Luxury Collection"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Crafted for Forever"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Discover our exquisite collection of engagement rings, meticulously crafted to celebrate your eternal love."
+    },
+    {
+      "type": "header",
+      "content": "Primary Button"
+    },
+    {
+      "type": "text",
+      "id": "button_1_label",
+      "label": "Button label",
+      "default": "Shop Engagement Rings"
+    },
+    {
+      "type": "url",
+      "id": "button_1_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_1_style",
+      "label": "Button style",
+      "options": [
+        { "value": "white", "label": "White" },
+        { "value": "ghost", "label": "Ghost (outline)" },
+        { "value": "gold", "label": "Gold" }
+      ],
+      "default": "white"
+    },
+    {
+      "type": "header",
+      "content": "Secondary Button"
+    },
+    {
+      "type": "text",
+      "id": "button_2_label",
+      "label": "Button label",
+      "default": "Build Your Ring"
+    },
+    {
+      "type": "url",
+      "id": "button_2_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_2_style",
+      "label": "Button style",
+      "options": [
+        { "value": "white", "label": "White" },
+        { "value": "ghost", "label": "Ghost (outline)" },
+        { "value": "gold", "label": "Gold" }
+      ],
+      "default": "ghost"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_height",
+      "label": "Full viewport height",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "hero_height",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "vh",
+      "label": "Hero height"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "default": 30,
+      "unit": "%",
+      "label": "Overlay opacity"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#c9a962"
+    },
+    {
+      "type": "header",
+      "content": "Additional Elements"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_indicator",
+      "label": "Show scroll indicator",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_diamond_accent",
+      "label": "Show diamond accent",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Luxury Hero",
+      "settings": {
+        "subtitle": "Luxury Collection",
+        "heading": "Crafted for Forever",
+        "description": "Discover our exquisite collection of engagement rings, meticulously crafted to celebrate your eternal love.",
+        "button_1_label": "Shop Engagement Rings",
+        "button_2_label": "Build Your Ring"
+      }
+    }
+  ]
+}
+{% endschema %}

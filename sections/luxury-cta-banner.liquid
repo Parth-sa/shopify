@@ -1,0 +1,273 @@
+{% comment %}
+  LUXURY CTA BANNER - Call to Action
+  ==================================
+  Premium call-to-action banner with background image/video
+{% endcomment %}
+
+{{ 'luxury-cta-banner.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #CTABanner-{{ section.id }} {
+    --cta-overlay: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    --cta-text: {{ section.settings.text_color }};
+    --cta-accent: {{ section.settings.accent_color }};
+  }
+{% endstyle %}
+
+<section 
+  id="CTABanner-{{ section.id }}"
+  class="luxury-cta-banner{% if section.settings.full_width %} luxury-cta-banner--full{% endif %}"
+>
+  <!-- Background -->
+  <div class="luxury-cta-banner__bg">
+    {%- if section.settings.image != blank -%}
+      <img 
+        src="{{ section.settings.image | image_url: width: 1920 }}"
+        srcset="{{ section.settings.image | image_url: width: 1200 }} 1200w, {{ section.settings.image | image_url: width: 1920 }} 1920w"
+        sizes="100vw"
+        alt="{{ section.settings.image.alt | default: section.settings.heading }}"
+        loading="lazy"
+        class="luxury-cta-banner__image"
+      >
+    {%- elsif section.settings.video != blank -%}
+      <video 
+        autoplay 
+        muted 
+        loop 
+        playsinline
+        class="luxury-cta-banner__video"
+      >
+        <source src="{{ section.settings.video }}" type="video/mp4">
+      </video>
+    {%- else -%}
+      <div class="luxury-cta-banner__placeholder"></div>
+    {%- endif -%}
+    <div class="luxury-cta-banner__overlay"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="luxury-container">
+    <div class="luxury-cta-banner__content luxury-cta-banner__content--{{ section.settings.alignment }}">
+      {%- if section.settings.icon == 'diamond' -%}
+        <div class="luxury-cta-banner__icon luxury-reveal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M12 2L2 9l10 13 10-13-10-7z"/>
+            <path d="M2 9h20"/>
+          </svg>
+        </div>
+      {%- endif -%}
+      
+      {%- if section.settings.subtitle != blank -%}
+        <p class="luxury-cta-banner__subtitle luxury-reveal">{{ section.settings.subtitle }}</p>
+      {%- endif -%}
+      
+      {%- if section.settings.heading != blank -%}
+        <h2 class="luxury-cta-banner__heading luxury-reveal">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      
+      {%- if section.settings.description != blank -%}
+        <p class="luxury-cta-banner__description luxury-reveal">{{ section.settings.description }}</p>
+      {%- endif -%}
+      
+      <div class="luxury-cta-banner__buttons luxury-reveal">
+        {%- if section.settings.button_1_label != blank -%}
+          <a href="{{ section.settings.button_1_link }}" class="luxury-btn luxury-btn--{{ section.settings.button_1_style }}">
+            {{ section.settings.button_1_label }}
+          </a>
+        {%- endif -%}
+        
+        {%- if section.settings.button_2_label != blank -%}
+          <a href="{{ section.settings.button_2_link }}" class="luxury-btn luxury-btn--{{ section.settings.button_2_style }}">
+            {{ section.settings.button_2_label }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const section = document.querySelector('#CTABanner-{{ section.id }}');
+    if (!section) return;
+    
+    const reveals = section.querySelectorAll('.luxury-reveal');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('is-visible');
+          }, index * 100);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.2
+    });
+    
+    reveals.forEach(el => observer.observe(el));
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Luxury CTA Banner",
+  "tag": "section",
+  "class": "luxury-cta-banner-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image"
+    },
+    {
+      "type": "url",
+      "id": "video",
+      "label": "Background video URL",
+      "info": "MP4 video. Takes priority over image if both set."
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "default": 50,
+      "unit": "%",
+      "label": "Overlay opacity"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "diamond", "label": "Diamond" }
+      ],
+      "default": "diamond"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Create Your Dream Ring"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Build Your Ring"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Design a one-of-a-kind engagement ring. Choose your setting, select your diamond, and create something truly unique."
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Primary Button"
+    },
+    {
+      "type": "text",
+      "id": "button_1_label",
+      "label": "Button label",
+      "default": "Start Building"
+    },
+    {
+      "type": "url",
+      "id": "button_1_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_1_style",
+      "label": "Button style",
+      "options": [
+        { "value": "white", "label": "White" },
+        { "value": "ghost", "label": "Ghost" },
+        { "value": "gold", "label": "Gold" }
+      ],
+      "default": "white"
+    },
+    {
+      "type": "header",
+      "content": "Secondary Button"
+    },
+    {
+      "type": "text",
+      "id": "button_2_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_2_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_2_style",
+      "label": "Button style",
+      "options": [
+        { "value": "white", "label": "White" },
+        { "value": "ghost", "label": "Ghost" },
+        { "value": "gold", "label": "Gold" }
+      ],
+      "default": "ghost"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full width",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#c9a962"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Luxury CTA Banner",
+      "settings": {
+        "subtitle": "Create Your Dream Ring",
+        "heading": "Build Your Ring",
+        "description": "Design a one-of-a-kind engagement ring. Choose your setting, select your diamond, and create something truly unique.",
+        "button_1_label": "Start Building"
+      }
+    }
+  ]
+}
+{% endschema %}
