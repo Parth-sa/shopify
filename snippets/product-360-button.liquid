@@ -6,17 +6,25 @@
   
   Accepts:
   - product: {Object} Product liquid object
-  - webgi_viewer_url: {String} URL to the hosted WebGI viewer
+  - webgi_viewer_url: {String} URL to the hosted WebGI viewer (optional, uses theme settings as fallback)
+  
+  Theme Settings used:
+  - settings.enable_360_viewer: Enable/disable 360 viewer globally
+  - settings.webgi_viewer_url: Default WebGI viewer URL
+  - settings.viewer_button_text: Button text (default: "360° View")
   
   Usage:
-  {% render 'product-360-button', product: product, webgi_viewer_url: 'https://your-domain.com/viewer/' %}
+  {% render 'product-360-button', product: product %}
 {% endcomment %}
 
-{%- assign first_3d_model = product.media | where: 'media_type', 'model' | first -%}
+{%- comment -%} Check if 360 viewer is enabled in theme settings {%- endcomment -%}
+{%- unless settings.enable_360_viewer == false -%}
+  {%- assign first_3d_model = product.media | where: 'media_type', 'model' | first -%}
 
-{%- if first_3d_model -%}
-  {%- assign glb_url = first_3d_model.sources[0].url -%}
-  {%- assign webgi_url = webgi_viewer_url | default: settings.webgi_viewer_url | default: '' -%}
+  {%- if first_3d_model -%}
+    {%- assign glb_url = first_3d_model.sources[0].url -%}
+    {%- assign webgi_url = webgi_viewer_url | default: settings.webgi_viewer_url | default: '' -%}
+    {%- assign button_text = settings.viewer_button_text | default: '360° View' -%}
   
   {{ 'product-360-viewer.css' | asset_url | stylesheet_tag }}
   
@@ -47,7 +55,7 @@
         <path d="M2 12h20"></path>
       </svg>
     </span>
-    <span class="product-360-button-text">360°</span>
+    <span class="product-360-button-text">{{ button_text }}</span>
   </button>
 
   <!-- 360 Viewer Modal (rendered once per page) -->
@@ -203,4 +211,5 @@
       }
     })();
   </script>
-{%- endif -%}
+  {%- endif -%}
+{%- endunless -%}
