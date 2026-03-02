@@ -1,0 +1,283 @@
+/* ============================================
+   Product 360° Viewer Button Styles
+   ============================================ */
+
+/* 360 Button on Product Image */
+.product-360-button {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.product-360-button:hover {
+  background: #86754d;
+  color: #fff;
+  border-color: #86754d;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(134, 117, 77, 0.3);
+}
+
+.product-360-button:active {
+  transform: scale(1);
+}
+
+.product-360-button-icon {
+  display: flex;
+  animation: product360IconPulse 2s ease-in-out infinite;
+}
+
+@keyframes product360IconPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.product-360-button:hover .product-360-button-icon {
+  animation: product360IconSpin 1s linear infinite;
+}
+
+@keyframes product360IconSpin {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
+.product-360-button-text {
+  white-space: nowrap;
+}
+
+/* Ensure product media item has relative positioning */
+.product__media-item {
+  position: relative;
+}
+
+/* Modal Styles */
+.product-360-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.product-360-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.product-360-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  cursor: pointer;
+}
+
+.product-360-modal-container {
+  position: relative;
+  width: 95%;
+  max-width: 1000px;
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+
+.product-360-modal.is-open .product-360-modal-container {
+  transform: scale(1);
+}
+
+.product-360-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+  background: #fafafa;
+}
+
+.product-360-modal-title {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #0a0a0a;
+  margin: 0;
+}
+
+.product-360-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #333;
+}
+
+.product-360-modal-close:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+  color: #000;
+}
+
+.product-360-modal-content {
+  flex: 1;
+  overflow: hidden;
+  min-height: 450px;
+}
+
+.product-360-viewer-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+}
+
+/* WebGI iframe */
+.product-360-webgi-iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  border: none;
+  display: block;
+}
+
+/* Loader */
+.product-360-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 10;
+}
+
+.product-360-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #ddd;
+  border-top-color: #86754d;
+  border-radius: 50%;
+  animation: product360Spin 0.8s linear infinite;
+}
+
+@keyframes product360Spin {
+  to { transform: rotate(360deg); }
+}
+
+.product-360-loader p {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Modal Footer */
+.product-360-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  background: #fafafa;
+  border-top: 1px solid #eee;
+}
+
+.product-360-instructions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: #666;
+  text-align: center;
+}
+
+.product-360-instructions strong {
+  color: #333;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+  .product-360-button {
+    top: 8px;
+    left: 8px;
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+
+  .product-360-button-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .product-360-modal-container {
+    width: 98%;
+    max-height: 95vh;
+    border-radius: 12px;
+  }
+
+  .product-360-modal-header {
+    padding: 12px 16px;
+  }
+
+  .product-360-modal-title {
+    font-size: 1rem;
+  }
+
+  .product-360-viewer-wrapper,
+  .product-360-webgi-iframe {
+    min-height: 350px;
+  }
+
+  .product-360-modal-footer {
+    padding: 10px 16px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .product-360-button-text {
+    display: none;
+  }
+
+  .product-360-button {
+    padding: 8px;
+    border-radius: 50%;
+  }
+
+  .product-360-viewer-wrapper,
+  .product-360-webgi-iframe {
+    min-height: 280px;
+  }
+}
