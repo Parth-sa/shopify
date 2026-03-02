@@ -1,0 +1,206 @@
+{% comment %}
+  Product 360 Viewer Button
+  
+  Renders a 360° view button for products with GLB/3D model files.
+  Uses WebGI advanced viewer for realistic diamond reflections.
+  
+  Accepts:
+  - product: {Object} Product liquid object
+  - webgi_viewer_url: {String} URL to the hosted WebGI viewer
+  
+  Usage:
+  {% render 'product-360-button', product: product, webgi_viewer_url: 'https://your-domain.com/viewer/' %}
+{% endcomment %}
+
+{%- assign first_3d_model = product.media | where: 'media_type', 'model' | first -%}
+
+{%- if first_3d_model -%}
+  {%- assign glb_url = first_3d_model.sources[0].url -%}
+  {%- assign webgi_url = webgi_viewer_url | default: settings.webgi_viewer_url | default: '' -%}
+  
+  {{ 'product-360-viewer.css' | asset_url | stylesheet_tag }}
+  
+  <!-- 360 Button Overlay on Product Image -->
+  <button
+    type="button"
+    class="product-360-button"
+    data-product-360-trigger
+    data-glb-url="{{ glb_url }}"
+    data-webgi-url="{{ webgi_url }}"
+    data-product-title="{{ product.title | escape }}"
+    aria-label="Open 360 degree view of {{ product.title | escape }}"
+  >
+    <span class="product-360-button-icon">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+        <path d="M2 12h20"></path>
+      </svg>
+    </span>
+    <span class="product-360-button-text">360°</span>
+  </button>
+
+  <!-- 360 Viewer Modal (rendered once per page) -->
+  <div class="product-360-modal" id="product360Modal" aria-hidden="true">
+    <div class="product-360-modal-overlay" data-product-360-close></div>
+    <div class="product-360-modal-container">
+      <div class="product-360-modal-header">
+        <h3 class="product-360-modal-title">360° View</h3>
+        <button type="button" class="product-360-modal-close" data-product-360-close aria-label="Close modal">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="product-360-modal-content">
+        <div class="product-360-viewer-wrapper">
+          <div class="product-360-loader" id="product360Loader">
+            <div class="product-360-spinner"></div>
+            <p>Loading 3D model...</p>
+          </div>
+          <!-- WebGI iframe will be inserted here -->
+          <iframe 
+            id="product360Viewer"
+            class="product-360-webgi-iframe"
+            src=""
+            frameborder="0"
+            allowfullscreen
+            allow="xr-spatial-tracking"
+          ></iframe>
+        </div>
+      </div>
+      <div class="product-360-modal-footer">
+        <div class="product-360-instructions">
+          <span><strong>Desktop:</strong> Click & drag to rotate, scroll to zoom</span>
+          <span><strong>Mobile:</strong> Touch & drag to rotate, pinch to zoom</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // Prevent duplicate initialization
+      if (window.product360ViewerInitialized) return;
+      window.product360ViewerInitialized = true;
+      
+      function initProduct360Viewer() {
+        const triggers = document.querySelectorAll('[data-product-360-trigger]');
+        const modal = document.getElementById('product360Modal');
+        const viewer = document.getElementById('product360Viewer');
+        const loader = document.getElementById('product360Loader');
+        const titleEl = modal ? modal.querySelector('.product-360-modal-title') : null;
+        
+        if (!modal || !viewer) {
+          console.error('Product 360 Viewer: Modal or viewer not found');
+          return;
+        }
+        
+        const closeButtons = modal.querySelectorAll('[data-product-360-close]');
+        
+        triggers.forEach(function(trigger) {
+          trigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const glbUrl = this.dataset.glbUrl;
+            const webgiUrl = this.dataset.webgiUrl;
+            const productTitle = this.dataset.productTitle;
+            
+            console.log('Opening 360 viewer for:', productTitle, 'GLB:', glbUrl);
+            
+            // Update modal title
+            if (titleEl && productTitle) {
+              titleEl.textContent = productTitle + ' - 360° View';
+            }
+            
+            // Build iframe URL with model parameter
+            let viewerSrc = '';
+            if (webgiUrl && glbUrl) {
+              viewerSrc = webgiUrl + (webgiUrl.includes('?') ? '&' : '?') + 'model=' + encodeURIComponent(glbUrl);
+            } else if (glbUrl) {
+              // Fallback: just set the GLB URL (for debugging)
+              console.warn('No WebGI URL configured, cannot display model');
+              viewerSrc = '';
+            }
+            
+            // Set iframe source
+            if (viewerSrc) {
+              viewer.src = viewerSrc;
+            }
+            
+            // Open modal
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            
+            // Show loader
+            if (loader) {
+              loader.style.display = 'flex';
+            }
+          });
+        });
+        
+        // Close modal handlers
+        closeButtons.forEach(function(btn) {
+          btn.addEventListener('click', closeModal);
+        });
+        
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+            closeModal();
+          }
+        });
+        
+        function closeModal() {
+          modal.classList.remove('is-open');
+          modal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+          
+          // Clear iframe to stop loading
+          viewer.src = '';
+        }
+        
+        // Hide loader when iframe loads
+        viewer.addEventListener('load', function() {
+          if (viewer.src && viewer.src !== '') {
+            console.log('WebGI viewer loaded');
+            if (loader) {
+              loader.style.display = 'none';
+            }
+          }
+        });
+        
+        console.log('Product 360 Viewer initialized with', triggers.length, 'trigger(s)');
+      }
+      
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initProduct360Viewer);
+      } else {
+        initProduct360Viewer();
+      }
+    })();
+  </script>
+{%- endif -%}
